@@ -24,7 +24,6 @@ Input: search("leetcoded"), Output: False
 */
 
 #include <iostream>
-#include <unordered_map>
 #include "../check/CheckResult.h"
 
 using namespace std;
