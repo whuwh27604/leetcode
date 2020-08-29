@@ -57,7 +57,7 @@ public:
     }
 
 private:
-    multiset<pair<int, int>, eventCompare> events;
+    set<pair<int, int>, eventCompare> events;
 };
 
 int main()
