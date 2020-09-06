@@ -23,16 +23,10 @@
 
 #include <iostream>
 #include <algorithm>
+#include "../header/TreeNode.h"
 #include "../check/CheckResult.h"
 
 using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-};
 
 class Solution {
 public:
@@ -41,19 +35,23 @@ public:
             return 0;
         }
 
-        if ((root->left != NULL) && (root->right != NULL)) {
-            return min(minDepth(root->left), minDepth(root->right)) + 1;
-        }
+        return DFS4Depth(root);
+    }
 
+    int DFS4Depth(TreeNode* root) {
         if ((root->left == NULL) && (root->right == NULL)) {
             return 1;
         }
 
         if (root->left == NULL) {
-            return minDepth(root->right) + 1;
+            return DFS4Depth(root->right) + 1;
         }
 
-        return minDepth(root->left) + 1;
+        if (root->right == NULL) {
+            return DFS4Depth(root->left) + 1;
+        }
+
+        return min(DFS4Depth(root->left), DFS4Depth(root->right)) + 1;
     }
 };
 
@@ -77,6 +75,8 @@ int main()
     check.checkInt(1, o.minDepth(&node1));
 
     node1.left = &node2;
+    node1.right = NULL;
+    node2.left = node2.right = NULL;
     check.checkInt(2, o.minDepth(&node1));
 
     TreeNode node6(25);
