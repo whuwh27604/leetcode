@@ -47,6 +47,12 @@ void CheckResult::checkIntVectorInNums(vector<int>& expected, vector<int>& actua
 	cout << endl;
 }
 
+void CheckResult::checkIntVectorRandomOrder(vector<int>& expected, vector<int>& actual) {
+	sort(expected.begin(), expected.end());
+	sort(actual.begin(), actual.end());
+	checkIntVector(expected, actual);
+}
+
 void CheckResult::checkIntVectorVector(vector<vector<int>>& expected, vector<vector<int>>& actual) {
 	cout << "result : " << (expected == actual ? "success" : "fail") << endl << "expected : ";
 	for (unsigned int i = 0; i < expected.size(); i++) {

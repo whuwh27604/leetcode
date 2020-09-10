@@ -12,6 +12,7 @@ public:
 	void checkInt(int expected, int actual);
 	void checkIntVector(vector<int>& expected, vector<int>& actual);
 	void checkIntVectorInNums(vector<int>& expected, vector<int>& actual, unsigned int nums);
+	void checkIntVectorRandomOrder(vector<int>& expected, vector<int>& actual);
 	void checkIntVectorVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkIntVectorVectorRandomOrder(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkIntDoubleVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
