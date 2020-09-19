@@ -25,19 +25,28 @@ using namespace std;
 class Solution {
 public:
     int sumOfLeftLeaves(TreeNode* root) {
-        return sumOfLeftLeavesWithDirection(root, false);
-    }
-
-    int sumOfLeftLeavesWithDirection(TreeNode* root, bool isLeft) {
         if (root == NULL) {
             return 0;
         }
 
-        if ((root->left == NULL) && (root->right == NULL)) {
-            return (isLeft ? root->val : 0);
+        int sum = 0;
+        DFS4Sum(root, false, sum);
+
+        return sum;
+    }
+
+    void DFS4Sum(TreeNode* root, bool isLeft, int& sum) {
+        if (isLeft && root->left == NULL && root->right == NULL) {
+            sum += root->val;
         }
 
-        return (sumOfLeftLeavesWithDirection(root->left, true) + sumOfLeftLeavesWithDirection(root->right, false));
+        if (root->left != NULL) {
+            DFS4Sum(root->left, true, sum);
+        }
+
+        if (root->right != NULL) {
+            DFS4Sum(root->right, false, sum);
+        }
     }
 };
 
@@ -61,6 +70,24 @@ int main()
     check.checkInt(0, o.sumOfLeftLeaves(&node4));
     check.checkInt(0, o.sumOfLeftLeaves(&node5));
     check.checkInt(0, o.sumOfLeftLeaves(NULL));
+
+    node1.val = 1;
+    node2.val = 2;
+    node3.val = 3;
+    node4.val = 4;
+    node5.val = 5;
+    node1.left = &node2;
+    node1.right = &node3;
+    node2.left = &node4;
+    node2.right = &node5;
+    node3.left = node3.right = NULL;
+    node4.left = node4.right = NULL;
+    node5.left = node5.right = NULL;
+    check.checkInt(4, o.sumOfLeftLeaves(&node1));
+    check.checkInt(4, o.sumOfLeftLeaves(&node2));
+    check.checkInt(0, o.sumOfLeftLeaves(&node3));
+    check.checkInt(0, o.sumOfLeftLeaves(&node4));
+    check.checkInt(0, o.sumOfLeftLeaves(&node5));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
