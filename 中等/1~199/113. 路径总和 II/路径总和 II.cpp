@@ -70,32 +70,8 @@ int main()
     Solution o;
     CheckResult check;
 
-    TreeNode node1(5);
-    TreeNode node2(4);
-    TreeNode node3(8);
-    TreeNode node4(11);
-    TreeNode node5(13);
-    TreeNode node6(4);
-    TreeNode node7(7);
-    TreeNode node8(2);
-    TreeNode node9(5);
-    TreeNode node10(1);
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = &node4;
-    node2.right = NULL;
-    node3.left = &node5;
-    node3.right = &node6;
-    node4.left = &node7;
-    node4.right = &node8;
-    node6.left = &node9;
-    node6.right = &node10;
-    node5.left = node5.right = NULL;
-    node7.left = node7.right = NULL;
-    node8.left = node8.right = NULL;
-    node9.left = node9.right = NULL;
-    node10.left = node10.right = NULL;
-    vector<vector<int>> actual = o.pathSum(&node1, 22);
+    vector<int> values = { 5,4,8,11,INT_MIN,13,4,7,2,INT_MIN,INT_MIN,5,1 };
+    vector<vector<int>> actual = o.pathSum(createTree(values), 22);
     vector<vector<int>> expected = { {5,4,11,2},{5,8,4,5} };
     check.checkIntVectorVector(expected, actual);
 
@@ -103,18 +79,13 @@ int main()
     expected = {  };
     check.checkIntVectorVector(expected, actual);
 
-    node1.val = 2;
-    node1.left = node1.right = NULL;
-    actual = o.pathSum(&node1, 2);
+    values = { 2 };
+    actual = o.pathSum(createTree(values), 2);
     expected = { {2} };
     check.checkIntVectorVector(expected, actual);
 
-    node1.val = 1;
-    node2.val = 2;
-    node1.left = &node2;
-    node1.right = NULL;
-    node2.left = node2.right = NULL;
-    actual = o.pathSum(&node1, 1);
+    values = { 1,2 };
+    actual = o.pathSum(createTree(values), 1);
     expected = {  };
     check.checkIntVectorVector(expected, actual);
 }
