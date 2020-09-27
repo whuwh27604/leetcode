@@ -32,27 +32,24 @@ p、q 为不同节点且均存在于给定的二叉搜索树中。
 */
 
 #include <iostream>
+#include <algorithm>
+#include "../header/TreeNode.h"
 #include "../check/CheckResult.h"
 
 using namespace std;
 
-struct TreeNode {
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-};
-
 class Solution {
 public:
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        // 注意二叉搜索树满足left<right
-        while ((root->val != p->val) && (root->val != q->val)) {
-            if (((root->val > p->val) && (root->val < q->val)) || ((root->val < p->val) && (root->val > q->val))) {
+        // 注意二叉搜索树满足left<root<right
+        int left = min(p->val, q->val), right = max(p->val, q->val);
+
+        while ((root->val != left) && (root->val != right)) {
+            if ((root->val > left) && (root->val < right)) {
                 return root;
             }
 
-            if ((root->val > p->val) && (root->val > q->val)) {
+            if ((root->val > left) && (root->val > right)) {
                 root = root->left;
             }
             else {
@@ -69,36 +66,19 @@ int main()
     Solution o;
     CheckResult check;
 
-    TreeNode node0(0);
-    TreeNode node1(1);
-    TreeNode node2(2);
-    TreeNode node3(3);
-    TreeNode node4(4);
-    TreeNode node5(5);
-    TreeNode node6(6);
-    TreeNode node7(7);
-    TreeNode node8(8);
-    TreeNode node9(9);
-    node6.left = &node2;
-    node6.right = &node8;
-    node2.left = &node0;
-    node2.right = &node4;
-    node4.left = &node3;
-    node4.right = &node5;
-    node8.left = &node7;
-    node8.right = &node9;
-    check.checkInt(6, o.lowestCommonAncestor(&node6, &node2, &node8)->val);
-    check.checkInt(4, o.lowestCommonAncestor(&node6, &node3, &node5)->val);
-    check.checkInt(2, o.lowestCommonAncestor(&node6, &node2, &node5)->val);
-    check.checkInt(2, o.lowestCommonAncestor(&node6, &node5, &node2)->val);
-    check.checkInt(2, o.lowestCommonAncestor(&node6, &node2, &node3)->val);
-    check.checkInt(8, o.lowestCommonAncestor(&node6, &node7, &node9)->val);
+    vector<int> values = { 6,2,8,0,4,7,9,INT_MIN,INT_MIN,3,5 };
+    TreeNode* root = createTree(values);
+    check.checkPoint(root, o.lowestCommonAncestor(root, root->left, root->right));
+    check.checkPoint(root->left->right, o.lowestCommonAncestor(root, root->left->right->left, root->left->right->right));
+    check.checkPoint(root->left, o.lowestCommonAncestor(root, root->left, root->left->right->right));
+    check.checkPoint(root->left, o.lowestCommonAncestor(root, root->left->right->right, root->left));
+    check.checkPoint(root->left, o.lowestCommonAncestor(root, root->left, root->left->right->left));
+    check.checkPoint(root->right, o.lowestCommonAncestor(root, root->right->left, root->right->right));
+    check.checkPoint(root, o.lowestCommonAncestor(root, root->left->right->left, root->right->left));
 
-    node2.left = &node1;
-    node2.right = &node3;
-    node1.left = node1.right = NULL;
-    node3.left = node3.right = NULL;
-    check.checkInt(2, o.lowestCommonAncestor(&node2, &node3, &node1)->val);
+    values = { 2,1,3 };
+    root = createTree(values);
+    check.checkPoint(root, o.lowestCommonAncestor(root, root->right, root->left));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
