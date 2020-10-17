@@ -11,15 +11,25 @@ void CheckResult::checkInt(int expected, int actual) {
 }
 
 void CheckResult::checkIntVector(vector<int>& expected, vector<int>& actual) {
-	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
-		cout << expected[i] << " ";
+	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : { ";
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		if (i == expected.size() - 1) {
+			cout << expected[i];
+		}
+		else {
+			cout << expected[i] << ",";
+		}
 	}
-	cout << ",  actual : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
-		cout << actual[i] << " ";
+	cout << " },  actual : { ";
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		if (i == actual.size() - 1) {
+			cout << actual[i];
+		}
+		else {
+			cout << actual[i] << ",";
+		}
 	}
-	cout << endl;
+	cout << " }" << endl;
 }
 
 void CheckResult::checkIntVectorInNums(vector<int>& expected, vector<int>& actual, unsigned int nums) {
@@ -29,7 +39,7 @@ void CheckResult::checkIntVectorInNums(vector<int>& expected, vector<int>& actua
 		return;
 	}
 
-	for (unsigned int i = 0; i < nums; i++) {
+	for (unsigned int i = 0; i < nums; ++i) {
 		if (expected[i] != actual[i]) {
 			result = false;
 			break;
@@ -37,11 +47,11 @@ void CheckResult::checkIntVectorInNums(vector<int>& expected, vector<int>& actua
 	}
 
 	cout << "result : " << (result ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < nums; i++) {
+	for (unsigned int i = 0; i < nums; ++i) {
 		cout << expected[i] << " ";
 	}
 	cout << ",  actual : ";
-	for (unsigned int i = 0; i < nums; i++) {
+	for (unsigned int i = 0; i < nums; ++i) {
 		cout << actual[i] << " ";
 	}
 	cout << endl;
@@ -54,24 +64,59 @@ void CheckResult::checkIntVectorRandomOrder(vector<int>& expected, vector<int>& 
 }
 
 void CheckResult::checkIntVectorVector(vector<vector<int>>& expected, vector<vector<int>>& actual) {
-	cout << "result : " << (expected == actual ? "success" : "fail") << endl << "expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
-		for (unsigned int j = 0; j < expected[i].size(); j++) {
-			cout << expected[i][j] << " ";
+	cout << "result : " << (expected == actual ? "success" : "fail") << endl << "expected : { ";
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		cout << "{";
+		for (unsigned int j = 0; j < expected[i].size(); ++j) {
+			if (j == expected[i].size() - 1) {
+				cout << expected[i][j];
+			}
+			else {
+				cout << expected[i][j] << ",";
+			}
 		}
-		cout << "   ";
-	}
-	cout << endl << "actual   : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
-		for (unsigned int j = 0; j < actual[i].size(); j++) {
-			cout << actual[i][j] << " ";
+		if (i == expected.size() - 1) {
+			cout << "}";
 		}
-		cout << "   ";
+		else {
+			cout << "}, ";
+		}
 	}
-	cout << endl << endl;
+
+	cout << " }" << endl << "actual   : { ";
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		cout << "{";
+		for (unsigned int j = 0; j < actual[i].size(); ++j) {
+			if (j == actual[i].size() - 1) {
+				cout << actual[i][j];
+			}
+			else {
+				cout << actual[i][j] << ",";
+			}
+		}
+		if (i == actual.size() - 1) {
+			cout << "}";
+		}
+		else {
+			cout << "}, ";
+		}
+	}
+	cout << " }" << endl << endl;
 }
 
 void CheckResult::checkIntVectorVectorRandomOrder(vector<vector<int>>& expected, vector<vector<int>>& actual) {
+	sort(expected.begin(), expected.end());
+	sort(actual.begin(), actual.end());
+	checkIntVectorVector(expected, actual);
+}
+
+void CheckResult::checkIntVectorRandomVectorRandomOrder(vector<vector<int>>& expected, vector<vector<int>>& actual) {
+	for (vector<int>& v : expected) {
+		sort(v.begin(), v.end());
+	}
+	for (vector<int>& v : actual) {
+		sort(v.begin(), v.end());
+	}
 	sort(expected.begin(), expected.end());
 	sort(actual.begin(), actual.end());
 	checkIntVectorVector(expected, actual);
@@ -82,7 +127,7 @@ void CheckResult::checkIntDoubleVector(vector<vector<int>>& expected, vector<vec
 	if (expected.size() != actual.size()) {
 		goto output;
 	}
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		if (expected[i] != actual[i]) {
 			goto output;
 		}
@@ -92,17 +137,17 @@ void CheckResult::checkIntDoubleVector(vector<vector<int>>& expected, vector<vec
 output:
 	cout << "result : " << (result ? "success" : "fail") << endl;
 	cout << "expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		vector<int> tmp = expected[i];
-		for (unsigned int j = 0; j < tmp.size(); j++) {
+		for (unsigned int j = 0; j < tmp.size(); ++j) {
 			cout << tmp[j] << " ";
 		}
 		cout << "  ";
 	}
 	cout << endl << "actual   : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
 		vector<int> tmp = actual[i];
-		for (unsigned int j = 0; j < tmp.size(); j++) {
+		for (unsigned int j = 0; j < tmp.size(); ++j) {
 			cout << tmp[j] << " ";
 		}
 		cout << "  ";
@@ -125,7 +170,7 @@ void CheckResult::checkDoubleVector(vector<double>& expected, vector<double>& ac
 	if (expected.size() != actual.size()) {
 		goto output;
 	}
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		if (abs(expected[i] - actual[i]) >= 1e-6) {
 			goto output;
 		}
@@ -134,11 +179,11 @@ void CheckResult::checkDoubleVector(vector<double>& expected, vector<double>& ac
 
 output:
 	cout << "result : " << (result ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		cout << expected[i] << " ";
 	}
 	cout << ",  actual : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
 		cout << actual[i] << " ";
 	}
 	cout << endl;
@@ -151,11 +196,11 @@ void CheckResult::checkBool(bool expected, bool actual) {
 
 void CheckResult::checkBoolVector(vector<bool>& expected, vector<bool>& actual) {
 	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		cout << expected[i] << " ";
 	}
 	cout << ",  actual : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
 		cout << actual[i] << " ";
 	}
 	cout << endl;
@@ -167,28 +212,44 @@ void CheckResult::checkString(string expected, string actual) {
 }
 
 void CheckResult::checkStringVector(vector<string>& expected, vector<string>& actual) {
-	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
-		cout << expected[i] << " ";
+	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : { ";
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		if (i == expected.size() - 1) {
+			cout << expected[i];
+		}
+		else {
+			cout << expected[i] << ",";
+		}
 	}
-	cout << ",  actual : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
-		cout << actual[i] << " ";
+	cout << " },  actual : { ";
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		if (i == actual.size() - 1) {
+			cout << actual[i];
+		}
+		else {
+			cout << actual[i] << ",";
+		}
 	}
-	cout << endl << endl;
+	cout << " }" << endl << endl;
+}
+
+void CheckResult::checkStringVectorRandomOrder(vector<string>& expected, vector<string>& actual) {
+	sort(expected.begin(), expected.end());
+	sort(actual.begin(), actual.end());
+	checkStringVector(expected, actual);
 }
 
 void CheckResult::checkStringVectorVector(vector<vector<string>>& expected, vector<vector<string>>& actual) {
 	cout << "result : " << (expected == actual ? "success," : "fail   ,") << endl << "expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
-		for (unsigned int j = 0; j < expected[i].size(); j++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		for (unsigned int j = 0; j < expected[i].size(); ++j) {
 			cout << expected[i][j] << " ";
 		}
 		cout << "   ";
 	}
 	cout << endl << "actual   : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
-		for (unsigned int j = 0; j < actual[i].size(); j++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		for (unsigned int j = 0; j < actual[i].size(); ++j) {
 			cout << actual[i][j] << " ";
 		}
 		cout << "   ";
@@ -202,11 +263,11 @@ void CheckResult::checkChar(char expected, char actual) {
 
 void CheckResult::checkCharVector(vector<char>& expected, vector<char>& actual) {
 	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
 		cout << expected[i] << " ";
 	}
 	cout << ",  actual : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
 		cout << actual[i] << " ";
 	}
 	cout << endl;
@@ -214,15 +275,15 @@ void CheckResult::checkCharVector(vector<char>& expected, vector<char>& actual) 
 
 void CheckResult::checkCharVectorVector(vector<vector<char>>& expected, vector<vector<char>>& actual) {
 	cout << "result : " << (expected == actual ? "success" : "fail") << endl << "expected : ";
-	for (unsigned int i = 0; i < expected.size(); i++) {
-		for (unsigned int j = 0; j < expected[i].size(); j++) {
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		for (unsigned int j = 0; j < expected[i].size(); ++j) {
 			cout << expected[i][j] << " ";
 		}
 		cout << "   ";
 	}
 	cout << endl << "actual   : ";
-	for (unsigned int i = 0; i < actual.size(); i++) {
-		for (unsigned int j = 0; j < actual[i].size(); j++) {
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		for (unsigned int j = 0; j < actual[i].size(); ++j) {
 			cout << actual[i][j] << " ";
 		}
 		cout << "   ";
