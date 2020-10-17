@@ -3,6 +3,8 @@
 
 #include <vector>
 
+using namespace std;
+
 struct TreeNode {
     int val;
     TreeNode* left;
@@ -11,6 +13,7 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
-extern TreeNode* createTree(std::vector<int>& values);
+extern TreeNode* createTree(vector<int>& values);
+extern TreeNode* createTree(vector<string>& values);
 
 #endif
