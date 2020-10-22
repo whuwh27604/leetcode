@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <queue>
 #include "CheckResult.h"
 
 using namespace std;
@@ -330,4 +331,41 @@ output:
 
 void CheckResult::checkPoint(void* expected, void* actual) {
 	cout << "result : " << (expected == actual ? "success," : "fail   ,") << " expected : " << expected << ",  actual : " << actual << endl;
+}
+
+void CheckResult::outputTree(TreeNode* root, string& output) {
+	queue<TreeNode*> bfs;
+	bfs.push(root);
+
+	while (!bfs.empty()) {
+		TreeNode* node = bfs.front();
+		bfs.pop();
+
+		if (node == NULL) {
+			output += "null,";
+		}
+		else {
+			output += to_string(node->val);
+			output += ',';
+			bfs.push(node->left);
+			bfs.push(node->right);
+		}
+	}
+
+	while (output.size() >= 5 && output[output.size() - 5] == 'n') {
+		output.erase(output.end() - 5, output.end());
+	}
+
+	if (!output.empty() && output.back() == ',') {
+		output.pop_back();
+	}
+}
+
+void CheckResult::checkTree(TreeNode* expected, TreeNode* actual) {
+	string outputE, outputA;
+	outputTree(expected, outputE);
+	outputTree(actual, outputA);
+	cout << "result : " << ((outputE == outputA) ? "success," : "fail fail fail fail fail fail fail fail fail fail fail fail fail,") << endl;
+	cout << "   expected : { " << outputE << " }" << endl;
+	cout << "   actual   : { " << outputA << " }" << endl << endl;
 }

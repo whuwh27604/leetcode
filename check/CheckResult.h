@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "../header/ListNode.h"
+#include "../header/TreeNode.h"
 
 using namespace std;
 
@@ -31,6 +32,10 @@ public:
 	void checkCharVectorVector(vector<vector<char>>& expected, vector<vector<char>>& actual);
 	void checkSingleList(ListNode* expected, ListNode* actual);
 	void checkPoint(void* expected, void* actual);
+	void checkTree(TreeNode* expected, TreeNode* actual);
+
+private:
+	void outputTree(TreeNode* root, string& output);
 };
 
 #endif
