@@ -40,21 +40,15 @@ using namespace std;
 class Solution {
 public:
     bool uniqueOccurrences(vector<int>& arr) {
-        unordered_map<int, int> numCount;
+        unordered_map<int, int> numsCount;
         unordered_set<int> times;
 
-        for (unsigned int i = 0; i < arr.size(); i++) {
-            auto iter = numCount.find(arr[i]);
-            if (iter == numCount.end()) {
-                numCount[arr[i]] = 1;
-            }
-            else {
-                iter->second++;
-            }
+        for (int num : arr) {
+            ++numsCount[num];
         }
 
-        for (auto iter = numCount.begin(); iter != numCount.end(); iter++) {
-            if (times.find(iter->second) != times.end()) {
+        for (auto iter = numsCount.begin(); iter != numsCount.end(); ++iter) {
+            if (times.count(iter->second) != 0) {
                 return false;
             }
 
