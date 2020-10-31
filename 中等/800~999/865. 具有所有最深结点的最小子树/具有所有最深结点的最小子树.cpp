@@ -41,50 +41,35 @@ using namespace std;
 class Solution {
 public:
     TreeNode* subtreeWithAllDeepest(TreeNode* root) {
-        int maxDepth = 0;
-        vector<TreeNode*> path;
-        vector<vector<TreeNode*>> deepestPaths;
+        vector<TreeNode*> path, deepestPath;
+        TreeNode* lca = NULL;
 
-        DFS(root, maxDepth, path, deepestPaths);
+        DFS(root, path, deepestPath, &lca);
 
-        int i, j, row = deepestPaths.size(), column = deepestPaths[0].size();
-
-        for (j = column - 1; j >= 0; --j) {
-            for (i = 1; i < row; ++i) {
-                if (deepestPaths[i][j] != deepestPaths[0][j]) {
-                    break;
-                }
-            }
-
-            if (i == row) {
-                break;
-            }
-        }
-
-        return deepestPaths[0][j];
+        return lca;
     }
 
-    void DFS(TreeNode* root, int& maxDepth, vector<TreeNode*>& path, vector<vector<TreeNode*>>& deepestPaths) {
+    void DFS(TreeNode* root, vector<TreeNode*>& path, vector<TreeNode*>& deepestPath, TreeNode** lca) {
         path.push_back(root);
 
-        if ((root->left == NULL) && (root->right == NULL)) {
-            int depth = path.size();
-            if (depth > maxDepth) {
-                maxDepth = depth;
-                deepestPaths.clear();
-                deepestPaths.push_back(path);
+        if (root->left == NULL && root->right == NULL) {
+            if (path.size() > deepestPath.size()) {
+                deepestPath = path;
+                *lca = root;
             }
-            else if (depth == maxDepth) {
-                deepestPaths.push_back(path);
+            else if (path.size() == deepestPath.size()) {
+                for (unsigned int i = 0; i < path.size() && path[i] == deepestPath[i]; ++i) {
+                    *lca = path[i];
+                }
             }
         }
         else {
             if (root->left != NULL) {
-                DFS(root->left, maxDepth, path, deepestPaths);
+                DFS(root->left, path, deepestPath, lca);
             }
 
             if (root->right != NULL) {
-                DFS(root->right, maxDepth, path, deepestPaths);
+                DFS(root->right, path, deepestPath, lca);
             }
         }
 
@@ -97,52 +82,23 @@ int main()
     Solution o;
     CheckResult check;
 
-    TreeNode node1(3);
-    TreeNode node2(5);
-    TreeNode node3(1);
-    TreeNode node4(6);
-    TreeNode node5(2);
-    TreeNode node6(0);
-    TreeNode node7(8);
-    TreeNode node8(7);
-    TreeNode node9(4);
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = &node4;
-    node2.right = &node5;
-    node3.left = &node6;
-    node3.right = &node7;
-    node5.left = &node8;
-    node5.right = &node9;
-    TreeNode* actual = o.subtreeWithAllDeepest(&node1);
-    TreeNode* expected = &node5;
-    check.checkPoint(expected, actual);
+    vector<int> values = { 3,5,1,6,2,0,8,INT_MIN,INT_MIN,7,4 };
+    check.checkInt(2, o.subtreeWithAllDeepest(createTree(values))->val);
 
-    node1.left = node1.right = NULL;
-    actual = o.subtreeWithAllDeepest(&node1);
-    expected = &node1;
-    check.checkPoint(expected, actual);
+    values = { 3 };
+    check.checkInt(3, o.subtreeWithAllDeepest(createTree(values))->val);
 
-    node1.left = &node2;
-    node1.right = NULL;
-    node2.left = node2.right = NULL;
-    actual = o.subtreeWithAllDeepest(&node1);
-    expected = &node2;
-    check.checkPoint(expected, actual);
+    values = { 3,5 };
+    check.checkInt(5, o.subtreeWithAllDeepest(createTree(values))->val);
 
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = &node4;
-    node2.right = &node5;
-    node3.left = &node6;
-    node3.right = &node7;
-    node4.left = node4.right = NULL;
-    node5.left = node5.right = NULL;
-    node6.left = node6.right = NULL;
-    node7.left = node7.right = NULL;
-    actual = o.subtreeWithAllDeepest(&node1);
-    expected = &node1;
-    check.checkPoint(expected, actual);
+    values = { 1,2,3,4,5,6,7 };
+    check.checkInt(1, o.subtreeWithAllDeepest(createTree(values))->val);
+
+    values = { 0,1,3,INT_MIN,2 };
+    check.checkInt(2, o.subtreeWithAllDeepest(createTree(values))->val);
+
+    values = { 1,2,3,4 };
+    check.checkInt(4, o.subtreeWithAllDeepest(createTree(values))->val);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
