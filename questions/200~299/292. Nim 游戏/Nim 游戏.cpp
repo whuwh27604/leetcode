@@ -1,0 +1,51 @@
+﻿/* Nim 游戏.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+你和你的朋友，两个人一起玩 Nim 游戏：桌子上有一堆石头，每次你们轮流拿掉 1 - 3 块石头。 拿掉最后一块石头的人就是获胜者。你作为先手。
+
+你们是聪明人，每一步都是最优解。 编写一个函数，来判断你是否可以在给定石头数量的情况下赢得游戏。
+
+示例:
+
+输入: 4
+输出: false
+解释: 如果堆中有 4 块石头，那么你永远不会赢得比赛；
+     因为无论你拿走 1 块、2 块 还是 3 块石头，最后一块石头总是会被你的朋友拿走。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/nim-game
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+
+#include <iostream>
+#include "../check/CheckResult.h"
+
+class Solution {
+public:
+    bool canWinNim(int n) {
+        // 4的倍数时，谁动手谁必输
+        return ((n % 4) != 0);
+    }
+};
+
+int main()
+{
+    Solution o;
+    CheckResult check;
+
+    check.checkBool(true, o.canWinNim(1));
+    check.checkBool(true, o.canWinNim(2));
+    check.checkBool(true, o.canWinNim(3));
+    check.checkBool(false, o.canWinNim(4));
+    check.checkBool(false, o.canWinNim(8));
+    check.checkBool(false, o.canWinNim(12));
+}
+
+// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
+// 调试程序: F5 或调试 >“开始调试”菜单
+
+// 入门使用技巧: 
+//   1. 使用解决方案资源管理器窗口添加/管理文件
+//   2. 使用团队资源管理器窗口连接到源代码管理
+//   3. 使用输出窗口查看生成输出和其他消息
+//   4. 使用错误列表窗口查看错误
+//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
+//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
