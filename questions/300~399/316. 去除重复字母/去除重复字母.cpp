@@ -27,8 +27,6 @@ s 由小写英文字母组成
 
 #include <iostream>
 #include <stack>
-#include <unordered_map>
-#include <unordered_set>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -36,7 +34,7 @@ using namespace std;
 class Solution {
 public:
     string removeDuplicateLetters(string s) {
-        unordered_map<char, int> lettersCount;
+        vector<int> lettersCount('z' + 1, 0);
         countLetters(s, lettersCount);
 
         stack<char> letters;
@@ -46,29 +44,29 @@ public:
         return getSubsequence(letters);
     }
 
-    void countLetters(string& s, unordered_map<char, int>& lettersCount) {
+    void countLetters(string& s, vector<int>& lettersCount) {
         for (char c : s) {
             ++lettersCount[c];
         }
     }
 
-    void removeRedundant(string& s, unordered_map<char, int>& lettersCount, stack<char>& letters) {
-        unordered_set<char> lettersInStack;
+    void removeRedundant(string& s, vector<int>& lettersCount, stack<char>& letters) {
+        vector<int> lettersInStack('z' + 1, 0);
 
         for (char c : s) {
             --lettersCount[c];  // 标记后续还有没有该字符
 
-            if (lettersInStack.count(c) != 0) {
+            if (lettersInStack[c] != 0) {
                 continue;  // 栈里面已经有该字符，说明第一个c后面的字符肯定比c大，否则就会把前面一个c踢出栈。所以后来的c抛弃，保留前面的。
             }
 
             while (c < letters.top() && lettersCount[letters.top()] != 0) {
-                lettersInStack.erase(letters.top());
+                lettersInStack[letters.top()] = 0;
                 letters.pop();  // 栈顶字符比当前字符大，并且后续还有它，那么栈顶这个可以抛弃掉了
             }
 
             letters.push(c);
-            lettersInStack.insert(c);
+            lettersInStack[c] = 1;
         }
     }
 
