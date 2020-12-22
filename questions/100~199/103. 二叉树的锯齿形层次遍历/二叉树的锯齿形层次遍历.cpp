@@ -23,8 +23,7 @@
 */
 
 #include <iostream>
-#include <list>
-#include "../header/TreeNode.h"
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -32,52 +31,41 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
-        vector<vector<int>> allValues;
+        vector<vector<int>> zigzagValues;
         if (root == NULL) {
-            return allValues;
+            return zigzagValues;
         }
 
-        list<TreeNode*> currentLevel;
-        currentLevel.push_back(root);
+        int i = 0, j, direction = 0;
+        queue<TreeNode*> bfs;
+        bfs.push(root);
 
-        int i = 0, j, direction = 1;
-        TreeNode* node;
-        while (!currentLevel.empty()) {
-            int len = currentLevel.size();
-            allValues.push_back(vector<int>(len, 0));
+        while (!bfs.empty()) {
+            int size = bfs.size();
+            zigzagValues.push_back(vector<int>(size, 0));
 
-            for (j = 0; j < len; j++) {
-                if (direction == 1) {
-                    node = currentLevel.front();
-                    currentLevel.pop_front();
+            for (j = 0; j < size; ++j) {
+                TreeNode* node = bfs.front();
+                bfs.pop();
+                zigzagValues[i][j] = node->val;
 
-                    if (node->left != NULL) {
-                        currentLevel.push_back(node->left);
-                    }
-                    if (node->right != NULL) {
-                        currentLevel.push_back(node->right);
-                    }
+                if (node->left != NULL) {
+                    bfs.push(node->left);
                 }
-                else {
-                    node = currentLevel.back();
-                    currentLevel.pop_back();
-
-                    if (node->right != NULL) {
-                        currentLevel.push_front(node->right);
-                    }
-                    if (node->left != NULL) {
-                        currentLevel.push_front(node->left);
-                    }
+                if (node->right != NULL) {
+                    bfs.push(node->right);
                 }
-
-                allValues[i][j] = node->val;
             }
 
-            i++;
-            direction = 0 - direction;
+            if (direction == 1) {
+                reverse(zigzagValues[i].begin(), zigzagValues[i].end());
+            }
+
+            ++i;
+            direction ^= 1;
         }
 
-        return allValues;
+        return zigzagValues;
     }
 };
 
@@ -86,16 +74,8 @@ int main()
     Solution o;
     CheckResult check;
 
-    TreeNode node1(3);
-    TreeNode node2(9);
-    TreeNode node3(20);
-    TreeNode node4(15);
-    TreeNode node5(7);
-    node1.left = &node2;
-    node1.right = &node3;
-    node3.left = &node4;
-    node3.right = &node5;
-    vector<vector<int>> actual = o.zigzagLevelOrder(&node1);
+    vector<int> values = { 3,9,20,INT_MIN,INT_MIN,15,7 };
+    vector<vector<int>> actual = o.zigzagLevelOrder(createTree(values));
     vector<vector<int>> expected = { {3},{20,9},{15,7} };
     check.checkIntVectorVector(expected, actual);
 
@@ -103,61 +83,23 @@ int main()
     expected = {  };
     check.checkIntVectorVector(expected, actual);
 
-    node1.left = node1.right = NULL;
-    actual = o.zigzagLevelOrder(&node1);
+    values = { 3 };
+    actual = o.zigzagLevelOrder(createTree(values));
     expected = { {3} };
     check.checkIntVectorVector(expected, actual);
 
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = node2.right = NULL;
-    node3.left = node3.right = NULL;
-    actual = o.zigzagLevelOrder(&node1);
+    values = { 3,9,20 };
+    actual = o.zigzagLevelOrder(createTree(values));
     expected = { {3},{20,9} };
     check.checkIntVectorVector(expected, actual);
 
-    node1.left = &node2;
-    node1.right = NULL;
-    node2.left = &node3;
-    node2.right = NULL;
-    node3.left = &node4;
-    node3.right = NULL;
-    node4.left = NULL;
-    node4.right = NULL;
-    actual = o.zigzagLevelOrder(&node1);
+    values = { 3,9,INT_MIN,20,INT_MIN,15 };
+    actual = o.zigzagLevelOrder(createTree(values));
     expected = { {3},{9},{20},{15} };
     check.checkIntVectorVector(expected, actual);
 
-    TreeNode node6(6);
-    TreeNode node7(7);
-    TreeNode node8(8);
-    TreeNode node9(9);
-    TreeNode node10(10);
-    TreeNode node11(11);
-    TreeNode node12(12);
-    TreeNode node13(13);
-    TreeNode node14(14);
-    TreeNode node15(15);
-    node1.val = 1;
-    node2.val = 2;
-    node3.val = 3;
-    node4.val = 4;
-    node5.val = 5;
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = &node4;
-    node2.right = &node5;
-    node3.left = &node6;
-    node3.right = &node7;
-    node4.left = &node8;
-    node4.right = &node9;
-    node5.left = &node10;
-    node5.right = &node11;
-    node6.left = &node12;
-    node6.right = &node13;
-    node7.left = &node14;
-    node7.right = &node15;
-    actual = o.zigzagLevelOrder(&node1);
+    values = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    actual = o.zigzagLevelOrder(createTree(values));
     expected = { {1},{3,2},{4,5,6,7},{15,14,13,12,11,10,9,8} };
     check.checkIntVectorVector(expected, actual);
 }
