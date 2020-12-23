@@ -18,6 +18,7 @@ s = "loveleetcode",
 */
 
 #include <iostream>
+#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -25,37 +26,22 @@ using namespace std;
 class Solution {
 public:
     int firstUniqChar(string s) {
-        struct CountIndex {
-            int count;
-            int firstIndex;
-        };
-        CountIndex charCount[26] = { 0 };
+        vector<int> count('z' + 1, 0), firstIndices('z' + 1, 0);
+        int i, size = s.size(), firstUniqIndex = INT_MAX;
 
-        for (unsigned int i = 0; i < s.size(); i++) {
-            int index = (s[i] - 'a');
-            if (charCount[index].count == 0) {
-                charCount[index].firstIndex = i;
-            }
-            charCount[index].count++;
-        }
-
-        int minFirstIndex = INT_MAX;
-        bool exist = false;
-        for (int j = 0; j < 26; j++) {
-            if (charCount[j].count == 1) {
-                exist = true;
-                if (charCount[j].firstIndex < minFirstIndex) {
-                    minFirstIndex = charCount[j].firstIndex;
-                }
+        for (i = 0; i < size; ++i) {
+            if (++count[s[i]] == 1) {
+                firstIndices[s[i]] = i;
             }
         }
 
-        if (exist) {
-            return minFirstIndex;
+        for (i = 'a'; i <= 'z'; ++i) {
+            if (count[i] == 1) {
+                firstUniqIndex = min(firstUniqIndex, firstIndices[i]);
+            }
         }
-        else {
-            return -1;
-        }
+
+        return firstUniqIndex == INT_MAX ? -1 : firstUniqIndex;
     }
 };
 
@@ -65,8 +51,8 @@ int main()
     CheckResult check;
 
     string s = "leetcode";
-    check.checkInt(0, o.firstUniqChar(s)); 
-    
+    check.checkInt(0, o.firstUniqChar(s));
+
     s = "loveleetcode";
     check.checkInt(2, o.firstUniqChar(s));
 
