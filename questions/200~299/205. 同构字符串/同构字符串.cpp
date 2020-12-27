@@ -34,27 +34,20 @@ using namespace std;
 class Solution {
 public:
     bool isIsomorphic(string s, string t) {
-        unordered_map<char, int> sMap;
-        int sLastNumber = 1;
-        unordered_map<char, int> tMap;
-        int tLastNumber = 1;
-        for (unsigned int i = 0; i < s.size(); i++) {
-            int sNum = mappingChar2Num(s[i], sMap, sLastNumber);
-            int tNum = mappingChar2Num(t[i], tMap, tLastNumber);
-            if (sNum != tNum) {
+        vector<int> sMap(127, 0), tMap(127, 0);
+        int i, size = s.size(), num = 0;
+
+        for (i = 0; i < size; ++i) {
+            if (sMap[s[i]] != tMap[t[i]]) {
                 return false;
             }
-        }
-        return true;
-    }
 
-    int mappingChar2Num(char c, unordered_map<char, int>& transMap, int& lastNumber) {
-        if (transMap.find(c) != transMap.end()) {
-            return transMap[c];
+            if (sMap[s[i]] == 0) {
+                sMap[s[i]] = tMap[t[i]] = ++num;
+            }
         }
-        lastNumber++;
-        transMap[c] = lastNumber;
-        return 0;
+
+        return true;
     }
 };
 
