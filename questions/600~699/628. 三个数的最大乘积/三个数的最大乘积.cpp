@@ -29,38 +29,60 @@ class Solution {
 public:
     int maximumProduct(vector<int>& nums) {
         /* 不管正负，答案一定在(min,min,max)和(max,max,max)这两种情况中 */
-        int firstMax = INT_MIN, secondMax = INT_MIN, thirdMax = INT_MIN;
-        int firstMin = INT_MAX, secondMin = INT_MAX;
-        for (unsigned int i = 0; i < nums.size(); i++) {
-            adjustMax(nums[i], firstMax, secondMax, thirdMax);
-            adjustMin(nums[i], firstMin, secondMin);
-        }
+        int firstMax = INT_MIN, secondMax = INT_MIN, thirdMax = INT_MIN, firstMin = INT_MAX, secondMin = INT_MAX;
+        vector<int> numsCount(2001, 0);
+
+        countNums(nums, numsCount);
+        getMin(numsCount, firstMin, secondMin);
+        getMax(numsCount, firstMax, secondMax, thirdMax);
 
         return max((firstMax * secondMax * thirdMax), (firstMin * secondMin * firstMax));
     }
 
-    void adjustMax(int number, int& firstMax, int& secondMax, int& thirdMax) {
-        if (number >= firstMax) {
-            thirdMax = secondMax;
-            secondMax = firstMax;
-            firstMax = number;
-        }
-        else if (number >= secondMax) {
-            thirdMax = secondMax;
-            secondMax = number;
-        }
-        else if (number > thirdMax) {
-            thirdMax = number;
+    void countNums(vector<int>& nums, vector<int>& numsCount) {
+        for (int num : nums) {
+            ++numsCount[num + 1000];
         }
     }
 
-    void adjustMin(int number, int& firstMin, int& secondMin) {
-        if (number <= firstMin) {
-            secondMin = firstMin;
-            firstMin = number;
+    void getMin(vector<int>& numsCount, int& firstMin, int& secondMin) {
+        for (int i = 0; i < 2001; ++i) {
+            if (numsCount[i] == 0) {
+                continue;
+            }
+
+            if (firstMin == INT_MAX) {
+                if (numsCount[i] > 1) {
+                    firstMin = secondMin = i - 1000;
+                    break;
+                }
+                else {
+                    firstMin = i - 1000;
+                }
+            }
+            else {
+                secondMin = i - 1000;
+                break;
+            }
         }
-        else if (number < secondMin) {
-            secondMin = number;
+    }
+
+    void getMax(vector<int>& numsCount, int& firstMax, int& secondMax, int& thirdMax) {
+        for (int i = 2000; i >= 0; --i) {
+            if (numsCount[i] != 0) {
+                if (firstMax == INT_MIN) {
+                    firstMax = i - 1000;
+                    --numsCount[i++];
+                }
+                else if (secondMax == INT_MIN) {
+                    secondMax = i - 1000;
+                    --numsCount[i++];
+                }
+                else {
+                    thirdMax = i - 1000;
+                    break;
+                }
+            }
         }
     }
 };
@@ -72,6 +94,9 @@ int main()
 
     vector<int> nums = { 1,2,3 };
     check.checkInt(6, o.maximumProduct(nums));
+
+    nums = { -8,-8,1,2,3 };
+    check.checkInt(192, o.maximumProduct(nums));
 
     nums = { 1,2,3,4 };
     check.checkInt(24, o.maximumProduct(nums));
@@ -93,6 +118,9 @@ int main()
 
     nums = { -1,-2,-3,-4,-5 };
     check.checkInt(-6, o.maximumProduct(nums));
+
+    nums = { 1,2,3,4,4,4 };
+    check.checkInt(64, o.maximumProduct(nums));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
