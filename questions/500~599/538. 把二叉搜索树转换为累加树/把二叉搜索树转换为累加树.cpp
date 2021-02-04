@@ -60,53 +60,25 @@ int main()
     Solution o;
     CheckResult check;
 
-    TreeNode node1(5);
-    TreeNode node2(2);
-    TreeNode node3(13);
-    node1.left = &node2;
-    node1.right = &node3;
-    o.convertBST(&node1);
-    check.checkInt(18, node1.val);
-    check.checkInt(20, node2.val);
-    check.checkInt(13, node3.val);
+    vector<int> values = { 4,1,6,0,2,5,7,INT_MIN,INT_MIN,INT_MIN,3,INT_MIN,INT_MIN,INT_MIN,8 };
+    TreeNode* actual = o.convertBST(createTree(values));
+    values = { 30,36,21,36,35,26,15,INT_MIN,INT_MIN,INT_MIN,33,INT_MIN,INT_MIN,INT_MIN,8 };
+    check.checkTree(createTree(values), actual);
 
-    check.checkInt(NULL, (int)o.convertBST(NULL));
+    values = { 0,INT_MIN,1 };
+    actual = o.convertBST(createTree(values));
+    values = { 1,INT_MIN,1 };
+    check.checkTree(createTree(values), actual);
 
-    node1.val = 5;
-    node1.left = node1.right = NULL;
-    o.convertBST(&node1);
-    check.checkInt(5, node1.val);
+    values = { 1,0,2 };
+    actual = o.convertBST(createTree(values));
+    values = { 3,3,2 };
+    check.checkTree(createTree(values), actual);
 
-    TreeNode node4(2);
-    TreeNode node5(5);
-    TreeNode node6(7);
-    TreeNode node7(10);
-    TreeNode node8(1);
-    TreeNode node9(3);
-    TreeNode node10(8);
-    node1.val = 6;
-    node2.val = 4;
-    node3.val = 9;
-    node1.left = &node2;
-    node1.right = &node3;
-    node2.left = &node4;
-    node2.right = &node5;
-    node3.left = &node6;
-    node3.right = &node7;
-    node4.left = &node8;
-    node4.right = &node9;
-    node6.right = &node10;
-    o.convertBST(&node1);
-    check.checkInt(40, node1.val);
-    check.checkInt(49, node2.val);
-    check.checkInt(19, node3.val);
-    check.checkInt(54, node4.val);
-    check.checkInt(45, node5.val);
-    check.checkInt(34, node6.val);
-    check.checkInt(10, node7.val);
-    check.checkInt(55, node8.val);
-    check.checkInt(52, node9.val);
-    check.checkInt(27, node10.val);
+    values = { 3,2,4,1 };
+    actual = o.convertBST(createTree(values));
+    values = { 7,9,4,10 };
+    check.checkTree(createTree(values), actual);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
