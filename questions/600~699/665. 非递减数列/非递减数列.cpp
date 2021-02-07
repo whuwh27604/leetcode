@@ -35,29 +35,21 @@ using namespace std;
 class Solution {
 public:
     bool checkPossibility(vector<int>& nums) {
-        nums.insert(nums.begin(), INT_MIN);
-        nums.push_back(INT_MAX);
+        int i, size = nums.size(), count = 0;
 
-        int count = 0;
-        for (unsigned int i = 2; i < (nums.size() - 1); i++) {
-            if (nums[i] >= nums[i - 1]) {
-                continue;
+        for (i = 1; i < size; ++i) {
+            if (nums[i] < nums[i - 1]) {
+                if (++count == 2) {
+                    return false;
+                }
+
+                if (i == 1 || nums[i] >= nums[i - 2]) {
+                    continue;
+                }
+                else {
+                    nums[i] = nums[i - 1];
+                }
             }
-
-            count++;
-            if (count >= 2) {
-                return false;
-            }
-
-            if (nums[i - 2] <= nums[i]) {
-                continue;
-            }
-
-            if (nums[i - 1] <= nums[i + 1]) {
-                continue;
-            }
-
-            return false;
         }
 
         return true;
