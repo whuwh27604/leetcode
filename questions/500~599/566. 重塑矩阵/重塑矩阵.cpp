@@ -48,23 +48,20 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
-        int row = nums.size();
-        int column = nums[0].size();
-        int area = (row * column);
-
-        if (((area % r) != 0) || ((area / r) != c)) {
+        int row = nums.size(), column = nums[0].size();
+        if (row * column != r * c) {
             return nums;
         }
 
         vector<vector<int>> newShape(r, vector<int>(c, 0));
-        int count = 0, newShapeI = 0, newShapeJ = 0;
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
-                newShape[newShapeI][newShapeJ++] = nums[i][j];
-                count++;
-                if ((count % c) == 0) {
-                    newShapeI++;
-                    newShapeJ = 0;
+        int i, j, nr = 0, nc = 0;
+
+        for (i = 0; i < row; ++i) {
+            for (j = 0; j < column; ++j) {
+                newShape[nr][nc] = nums[i][j];
+                if (++nc == c) {
+                    ++nr;
+                    nc = 0;
                 }
             }
         }
