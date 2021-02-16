@@ -26,20 +26,14 @@ using namespace std;
 class Solution {
 public:
     vector<int> getRow(int rowIndex) {
-        rowIndex++;  //  这一题的rowIndex是数组下标的含义，从0开始
+        vector<int> nums(++rowIndex, 1);
 
-        vector<int> nums;
-        nums.assign(rowIndex, 1);
-        int i, j;
-        for (i = 3; i <= rowIndex; i++) {
-            // 先填充一行数据的后一半
-            nums[i - 1] = 1;
-            for (j = (i - 2); j >= (i / 2); j--) {
+        for (int i = 3; i <= rowIndex; ++i) {
+            for (int j = (i - 2); j >= (i / 2); --j) {  // 先填充一行数据的后一半
                 nums[j] = nums[i - 1 - j] + nums[i - 1 - j - 1];
             }
 
-            // 再copy到前一半
-            for (j = 1; j < (i / 2); j++) {
+            for (int j = 1; j < (i / 2); ++j) {  // 再copy到前一半
                 nums[j] = nums[i - 1 - j];
             }
         }
@@ -52,7 +46,7 @@ int main()
 {
     Solution o;
     CheckResult check;
-    
+
     vector<int> expected = { 1 };
     vector<int> actual = o.getRow(0);
     check.checkIntVector(expected, actual);
