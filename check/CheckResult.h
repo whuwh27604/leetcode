@@ -16,6 +16,7 @@ public:
 	void checkIntVectorRandomOrder(vector<int>& expected, vector<int>& actual);
 	void checkIntVectorVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkIntVectorVectorRandomOrder(vector<vector<int>>& expected, vector<vector<int>>& actual);
+	void checkIntVectorRandomOrderVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkIntVectorRandomVectorRandomOrder(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkIntDoubleVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkUint(unsigned int expected, unsigned int actual);
@@ -27,6 +28,8 @@ public:
 	void checkStringVector(vector<string>& expected, vector<string>& actual);
 	void checkStringVectorRandomOrder(vector<string>& expected, vector<string>& actual);
 	void checkStringVectorVector(vector<vector<string>>& expected, vector<vector<string>>& actual);
+	void checkStringVectorRandomOrderVector(vector<vector<string>>& expected, vector<vector<string>>& actual);
+	void checkStringVectorRandomVectorRandomOrder(vector<vector<string>>& expected, vector<vector<string>>& actual);
 	void checkChar(char expected, char actual);
 	void checkCharVector(vector<char>& expected, vector<char>& actual);
 	void checkCharVectorVector(vector<vector<char>>& expected, vector<vector<char>>& actual);
