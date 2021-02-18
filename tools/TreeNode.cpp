@@ -15,6 +15,10 @@ int getNumber(string& value) {
 }
 
 TreeNode* createTree(vector<int>& values) {
+	if (values.empty()) {
+		return NULL;
+	}
+
 	int i, size = values.size();
 	TreeNode* root = new TreeNode(values[0]);
 	queue<TreeNode*> nodes;
@@ -46,6 +50,10 @@ TreeNode* createTree(vector<int>& values) {
 }
 
 TreeNode* createTree(vector<string>& values) {
+	if (values.empty()) {
+		return NULL;
+	}
+
 	int i, size = values.size();
 	TreeNode* root = new TreeNode(getNumber(values[0]));
 	queue<TreeNode*> nodes;
