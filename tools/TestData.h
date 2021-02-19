@@ -6,6 +6,7 @@
 
 using namespace std;
 
+extern vector<int> getIntVector(string filename);
 extern vector<vector<int>> getIntVectorVector(string filename);
 
 #endif
