@@ -35,10 +35,9 @@
 */
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <algorithm>
 #include "../check/CheckResult.h"
+#include "../tools/TestData.h"
 
 using namespace std;
 
@@ -104,27 +103,10 @@ int main()
     expected = { 1,2 };
     check.checkIntVector(expected, actual);
 
-    vector<int> arr1;
-    ifstream in("D:/ProgramData/Microsoft/VisualStudio/myproject/数组序号转换/a.txt", ios::binary);
-    string fileContext;
-    in >> fileContext;
-    string::size_type previos = 0;
-    string::size_type position = fileContext.find(',');
-    while (position != fileContext.npos) {
-        string oneNumber(fileContext, previos, position - previos + 1);
-        stringstream ss;
-        ss << oneNumber;
-        int number;
-        ss >> number;
-        arr1.push_back(number);
-
-        position++;
-        previos = position;
-        position = fileContext.find(',', position);
-    }
-    actual = o.arrayRankTransform(arr1);
-    //expected = {  };
-    //check.checkIntVector(expected, actual);
+    arr = getIntVector("./testcase1.txt");
+    actual = o.arrayRankTransform(arr);
+    expected = {  };
+    check.checkIntVector(expected, actual);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
