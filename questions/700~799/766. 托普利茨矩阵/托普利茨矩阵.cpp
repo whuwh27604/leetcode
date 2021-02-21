@@ -49,29 +49,21 @@ using namespace std;
 class Solution {
 public:
     bool isToeplitzMatrix(vector<vector<int>>& matrix) {
-        unsigned int i, j, r, c, row = matrix.size(), column = matrix[0].size();
+        int i, j, k, row = matrix.size(), column = matrix[0].size();
 
-        for (j = 0; j < (column - 1); j++) {
-            r = 1;
-            c = (j + 1);
-            while ((r < row) && (c < column)) {
-                if (matrix[r][c] != matrix[0][j]) {
+        for (k = 0; k < row - 1; ++k) {
+            for (i = k, j = 0; i < row && j < column; ++i, ++j) {
+                if (matrix[i][j] != matrix[k][0]) {
                     return false;
                 }
-                r++;
-                c++;
             }
         }
 
-        for (i = 1; i < (row - 1); i++) {
-            r = (i + 1);
-            c = 1;
-            while ((r < row) && (c < column)) {
-                if (matrix[r][c] != matrix[i][0]) {
+        for (k = 1; k < column - 1; ++k) {
+            for (i = 0, j = k; i < row && j < column; ++i, ++j) {
+                if (matrix[i][j] != matrix[0][k]) {
                     return false;
                 }
-                r++;
-                c++;
             }
         }
 
