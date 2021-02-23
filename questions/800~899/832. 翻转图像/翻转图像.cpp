@@ -35,10 +35,13 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) {
-        for (unsigned int i = 0; i < A.size(); i++) {
-            reverse(A[i].begin(), A[i].end());
-            for (unsigned int j = 0; j < A[i].size(); j++) {
-                A[i][j] ^= 1;
+        int r, c1, c2, row = A.size(), column = A[0].size();
+
+        for (r = 0; r < row; ++r) {
+            for (c1 = 0, c2 = column - 1; c1 <= c2; ++c1, --c2) {
+                if (A[r][c1] == A[r][c2]) {
+                    A[r][c1] = A[r][c2] = (A[r][c1] ^ 1);
+                }
             }
         }
 
