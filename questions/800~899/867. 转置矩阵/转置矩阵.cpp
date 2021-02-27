@@ -33,14 +33,12 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> transpose(vector<vector<int>>& A) {
-        int rA = A.size(), cA = A[0].size();
-        vector<vector<int>> transposed;
-        transposed.resize(cA);
+        int i, j, row = A.size(), column = A[0].size();
+        vector<vector<int>> transposed(column, vector<int>(row));
 
-        for (int i = 0; i < cA; i++) {
-            transposed[i].resize(rA);
-            for (int j = 0; j < rA; j++) {
-                transposed[i][j] = A[j][i];
+        for (i = 0; i < row; ++i) {
+            for (j = 0; j < column; ++j) {
+                transposed[j][i] = A[i][j];
             }
         }
 
