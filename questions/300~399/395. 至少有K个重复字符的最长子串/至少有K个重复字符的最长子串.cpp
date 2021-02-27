@@ -26,8 +26,6 @@ s = "ababbc", k = 2
 */
 
 #include <iostream>
-#include <set>
-#include <unordered_map>
 #include <algorithm>
 #include "../check/CheckResult.h"
 
@@ -36,60 +34,34 @@ using namespace std;
 class Solution {
 public:
     int longestSubstring(string s, int k) {
-        int longestSubstr = 0;
-        list<pair<int, int>> splitSections;
-        splitSections.push_back({ 0, s.size() - 1 });
+        return getLongestSubstr(s, k, 0, s.size() - 1);
+    }
 
-        while (!splitSections.empty()) {
-            int start = splitSections.front().first;
-            int end = splitSections.front().second;
-            splitSections.pop_front();
+    int getLongestSubstr(string& s, int k, int start, int end) {
+        if (end - start + 1 < k) {
+            return 0;
+        }
 
-            if ((end - start + 1) <= longestSubstr) {
-                continue;
+        vector<int> lettersCount(26);
+        int left = start - 1, right, longestSubstr = 0;
+
+        for (int i = start; i <= end; ++i) {
+            ++lettersCount[s[i] - 'a'];
+        }
+
+        for (right = start; right <= end; ++right) {
+            if (lettersCount[s[right] - 'a'] < k) {  // 当前字符的个数小于k，那么它一定不在目标子串中
+                longestSubstr = max(longestSubstr, getLongestSubstr(s, k, left + 1, right - 1));
+                left = right;
             }
+        }
 
-            unordered_map<char, vector<int>> charCount;  // vector[0]记录char的个数，vector[1...n]记录char的index
-            for (int i = start; i <= end; i++) {
-                auto iter = charCount.find(s[i]);
-                if (iter == charCount.end()) {
-                    charCount[s[i]] = { 1,i };
-                }
-                else {
-                    iter->second[0]++;
-                    if (iter->second[0] < k) {
-                        iter->second.push_back(i);
-                    }
-                }
-            }
+        if (left == start - 1) {  // 没有小于k的字符，返回整个区间的长度
+            return end - start + 1;
+        }
 
-            set<int> lessKIndexs;
-            bool noLessKSection = true;
-
-            for (auto iter = charCount.begin(); iter != charCount.end(); iter++) {
-                if (iter->second[0] >= k) {
-                    continue;
-                }
-
-                noLessKSection = false;
-
-                for (int i = 1; i <= iter->second[0]; i++) {
-                    lessKIndexs.insert(iter->second[i]);  // 所有小于k次的字符的index按顺序排好
-                }
-            }
-
-            if (noLessKSection) {
-                longestSubstr = max(longestSubstr, end - start + 1);
-                continue;
-            }
-
-            int splitStart = start, splitEnd;  // 以小于k次的字符的index为边界，把原区间划分为n个小的区间
-            for (auto iter = lessKIndexs.begin(); iter != lessKIndexs.end(); iter++) {
-                splitEnd = *iter - 1;
-                splitSections.push_back({ splitStart, splitEnd });
-                splitStart = *iter + 1;
-            }
-            splitSections.push_back({ splitStart, end });
+        if (left != end) {  // 如果s[end]大于k，最后一个子区间还没有计算，补上
+            longestSubstr = max(longestSubstr, getLongestSubstr(s, k, left + 1, end));
         }
 
         return longestSubstr;
