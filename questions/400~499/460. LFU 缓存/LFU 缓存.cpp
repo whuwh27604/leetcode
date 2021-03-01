@@ -63,94 +63,176 @@ lFUCache.get(4);      // 返回 4
 
 using namespace std;
 
-class Node {
+class CrossNode {
 public:
     int key;
     int value;
     int counter;
-    Node* prev;
-    Node* next;
-    Node* up;
-    Node* down;
+    CrossNode* prev;
+    CrossNode* next;
+    CrossNode* up;
+    CrossNode* down;
 
-    Node() : key(0), value(0), counter(0), prev(NULL), next(NULL), up(NULL), down(NULL) {}
-    Node(int _key, int _val) : key(_key), value(_val), counter(1), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+    CrossNode() : key(0), value(0), counter(0), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+    CrossNode(int _key, int _val) : key(_key), value(_val), counter(1), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+
+    bool isVNode() {
+        return prev == NULL;
+    }
 };
 
 class HList {
 public:
-    Node pseudoHead;
-    Node pseudoTail;
-
     HList() {
         pseudoHead.next = &pseudoTail;
         pseudoTail.prev = &pseudoHead;
+        pseudoHead.counter = INT_MIN;
         pseudoTail.counter = INT_MAX;
     }
-    
-    void insert(Node* prevNode, Node* node, Node* nextNode) {
-        prevNode->next = node;
-        node->prev = prevNode;
 
-        if (node->counter == nextNode->counter) {  // 相同的要合并，后面一列放到当前节点下面
-            node->next = nextNode->next;
-            nextNode->next->prev = node;
-            node->down = nextNode;
-            nextNode->up = node;
-            nextNode->prev = nextNode->next = NULL;  // 纯纵向节点没有前后
-        }
-        else {
-            node->next = nextNode;
-            nextNode->prev = node;
-        }
+    CrossNode* front() {
+        return pseudoHead.next;
     }
 
-    Node* remove(Node* node) {
-        Node* prevNode = node->prev;
-        Node* nextNode = node->next;
-
-        if (node->down == NULL) {  // 这一列只剩这一个节点了，直接删除
-            prevNode->next = nextNode;
-            nextNode->prev = prevNode;
-            return prevNode;
-        }
-        else {  // 这一列还有其它节点，删了首节点第二个顶上来
-            prevNode->next = node->down;
-            node->down->prev = prevNode;
-            node->down->next = nextNode;
-            nextNode->prev = node->down;
-            return node->down;
-        }
+    CrossNode* back() {
+        return pseudoTail.prev;
     }
+
+    void insertAfter(CrossNode* after, CrossNode* node) {
+        node->prev = after;
+        node->next = after->next;
+        after->next->prev = node;
+        after->next = node;
+    }
+
+    void insertBefore(CrossNode* before, CrossNode* node) {
+        node->prev = before->prev;
+        node->next = before;
+        before->prev->next = node;
+        before->prev = node;
+    }
+
+    void remove(CrossNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+private:
+    CrossNode pseudoHead;
+    CrossNode pseudoTail;
 };
 
 class VList {
 public:
-    Node pseudoTop;
-    Node pseudoBottom;
-    int size;
-
     VList() {
         pseudoTop.down = &pseudoBottom;
         pseudoBottom.up = &pseudoTop;
-        size = 0;
     }
 
-    void insert(Node* node) {  // 只能插入在头部
+    CrossNode* top() {
+        return pseudoTop.down;
+    }
+
+    CrossNode* bottom() {
+        return pseudoBottom.up;
+    }
+
+    void pushTop(CrossNode* node) {
         node->up = &pseudoTop;
         node->down = pseudoTop.down;
         pseudoTop.down->up = node;
         pseudoTop.down = node;
-        ++size;
+        node->down->prev = node->down->next = NULL;  // 插入新的top后，原来的top变为一个纵向节点，不再是十字节点
     }
 
-    void remove(Node* node) {
+    void remove(CrossNode* node) {
         node->up->down = node->down;
         node->down->up = node->up;
-        if (--size == 0) {
-            node->up = node->down = NULL;  // 删光之后要置空，因为删除横向的时候会判断纵向还有没有节点
+    }
+
+    bool empty() {
+        return pseudoTop.down == &pseudoBottom;
+    }
+
+private:
+    CrossNode pseudoTop;
+    CrossNode pseudoBottom;
+};
+
+class CrossList {
+public:
+    CrossNode* front() {
+        return hlist.front();
+    }
+
+    CrossNode* back() {
+        return hlist.back();
+    }
+
+    CrossNode* prev(CrossNode* node) {
+        return vlists[node->counter].top()->prev;
+    }
+
+    CrossNode* next(CrossNode* node) {
+        return vlists[node->counter].top()->next;
+    }
+
+    CrossNode* minCounter() {
+        return vlists[hlist.front()->counter].bottom();  // 链表第一个的最下面一个
+    }
+
+    void pushFront(CrossNode* node) {
+        insertBefore(hlist.front(), node);  // 插入到首节点前面，因为它们的counter有可能相等
+    }
+
+    void insertAfter(CrossNode* after, CrossNode* node) {
+        if (after->counter == node->counter) {  // 如果插入的位置counter相等，合并它们到纵向队列
+            CrossNode* prev = after->prev;
+            hlist.remove(after);  // 删除原来的十字节点
+            hlist.insertAfter(prev, node);  // 新插入的节点做为新的十字节点
+        }
+        else {
+            hlist.insertAfter(after, node);
+        }
+
+        vlists[node->counter].pushTop(node);
+    }
+
+    void insertBefore(CrossNode* before, CrossNode* node) {
+        if (before->counter == node->counter) {
+            CrossNode* next = before->next;
+            hlist.remove(before);
+            hlist.insertBefore(next, node);
+        }
+        else {
+            hlist.insertBefore(before, node);
+        }
+
+        vlists[node->counter].pushTop(node);
+    }
+
+    void remove(CrossNode* node) {
+        vlists[node->counter].remove(node);  // 先删除纵向
+
+        if (!node->isVNode()) {
+            hlist.remove(node);  // 再删除横向
+
+            if (!vlists[node->counter].empty()) {  // 如果纵向不为空，下一个纵向节点顶上来作为新的十字节点
+                hlist.insertAfter(node->prev, vlists[node->counter].top());
+            }
+            else {
+                vlists.erase(node->counter);  // 已经为空了，删除该纵向队列的数据结构
+            }
         }
     }
+
+    bool empty() {
+        return vlists.empty();
+    }
+
+private:
+    HList hlist;
+    unordered_map<int, VList> vlists;
 };
 
 class LFUCache {
@@ -165,11 +247,11 @@ public:
             return -1;
         }
 
-        Node* node = keyNodes[key];
-        Node* next = counterList[node->counter].pseudoTop.down->next;
-        Node* prev = remove(node);  // 先删除这个节点
+        CrossNode* node = keyNodes[key];
+        CrossNode* next = clist.next(node);
+        clist.remove(node);  // 先删除这个节点
         ++node->counter;
-        insert(prev, node, next);  // 计数加1后再重新插入
+        clist.insertBefore(next, node);  // 计数加1后再重新插入
 
         return node->value;
     }
@@ -180,52 +262,31 @@ public:
         }
 
         if (keyNodes.count(key) != 0) {  // 已经存在的节点，更新value和counter
-            Node* node = keyNodes[key];
-            Node* next = counterList[node->counter].pseudoTop.down->next;
-            Node* prev = remove(node);
+            CrossNode* node = keyNodes[key];
+            CrossNode* next = clist.next(node);
+            clist.remove(node);  // 先删除这个节点
             ++node->counter;
             node->value = value;
-            insert(prev, node, next);
+            clist.insertBefore(next, node);  // 计数加1后再重新插入
         }
         else {
             if (++size > cap) {  // 如果容量超限，先把最后一个干掉
                 size = cap;
-                Node* leastCounter = counterList[hlist.pseudoHead.next->counter].pseudoBottom.up;  // 链表第一个的最下面一个
-                keyNodes.erase(leastCounter->key);
-                (void)remove(leastCounter);
-                delete leastCounter;
+                CrossNode* minCounter = clist.minCounter();
+                clist.remove(minCounter);
+                keyNodes.erase(minCounter->key);
+                delete minCounter;
             }
 
-            Node* node = new Node(key, value);
+            CrossNode* node = new CrossNode(key, value);
             keyNodes[key] = node;
-            insert(&hlist.pseudoHead, node, hlist.pseudoHead.next);  // 新的节点肯定插入在pseudoHead后面
+            clist.pushFront(node);
         }
-    }
-
-    Node* remove(Node* node) {
-        VList& vlist = counterList[node->counter];
-        vlist.remove(node);  // 先从纵向队列删除
-
-        if (vlist.size == 0) {
-            counterList.erase(node->counter);
-        }
-
-        if (node->prev != NULL) {
-            return hlist.remove(node);  // 再从横向队列删除
-        }
-
-        return counterList[node->counter].pseudoTop.down;  // 如果仅仅只是纵向节点，返回这一列的第一个节点
-    }
-
-    void insert(Node* prev, Node* node, Node* next) {
-        counterList[node->counter].insert(node);
-        hlist.insert(prev, node, next);
     }
 
 private:
-    unordered_map<int, Node*> keyNodes;
-    unordered_map<int, VList> counterList;
-    HList hlist;
+    unordered_map<int, CrossNode*> keyNodes;
+    CrossList clist;
     int cap;
     int size;
 };
