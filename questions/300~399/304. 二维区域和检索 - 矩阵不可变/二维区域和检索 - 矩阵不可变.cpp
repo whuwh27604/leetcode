@@ -36,30 +36,28 @@ using namespace std;
 class NumMatrix {
 public:
     NumMatrix(vector<vector<int>>& matrix) {
-        for (unsigned int i = 0; i < matrix.size(); i++) {
-            long long oneRowSum = 0;
-            vector<long long> oneRow;
+        if (matrix.empty() || matrix[0].empty()) {
+            return;
+        }
 
-            for (unsigned int j = 0; j < matrix[0].size(); j++) {
-                oneRowSum += matrix[i][j];
-                long long sum = (i == 0) ? oneRowSum : (sumMatrix[i - 1][j] + oneRowSum);
-                oneRow.push_back(sum);
-            }
+        int i, j, row = matrix.size(), column = matrix[0].size();
 
+        vector<long long> oneRow(column + 1, 0);
+        sumMatrix.push_back(oneRow);
+
+        for (i = 0; i < row; ++i) {
             sumMatrix.push_back(oneRow);
+            long long oneRowSum = 0;
+
+            for (j = 0; j < column; ++j) {
+                oneRowSum += matrix[i][j];
+                sumMatrix[i + 1][j + 1] = sumMatrix[i][j + 1] + oneRowSum;
+            }
         }
     }
 
     int sumRegion(int row1, int col1, int row2, int col2) {
-        if (sumMatrix.empty() || sumMatrix[0].empty()) {
-            return 0;
-        }
-
-        long long sum1 = sumMatrix[row2][col2];
-        long long sum2 = ((row1 == 0) || (col1 == 0)) ? 0 : sumMatrix[row1 - 1][col1 - 1];
-        long long sum3 = (row1 == 0) ? 0 : sumMatrix[row1 - 1][col2];
-        long long sum4 = (col1 == 0) ? 0 : sumMatrix[row2][col1 - 1];
-        return (int)(sum1 + sum2 - sum3 - sum4);
+        return (int)(sumMatrix[row2 + 1][col2 + 1] + sumMatrix[row1][col1] - sumMatrix[row1][col2 + 1] - sumMatrix[row2 + 1][col1]);
     }
 
     vector<vector<long long>> sumMatrix;
@@ -71,11 +69,9 @@ int main()
 
     vector<vector<int>> matrix = {};
     NumMatrix o(matrix);
-    check.checkInt(0, o.sumRegion(0, 0, 0, 0));
 
     matrix = { {} };
     NumMatrix o1(matrix);
-    check.checkInt(0, o1.sumRegion(0, 0, 1, 0));
 
     matrix = { {3, 0, 1, 4, 2},{5, 6, 3, 2, 1},{1, 2, 0, 1, 5},{4, 1, 0, 1, 7},{1, 0, 3, 0, 5} };
     NumMatrix o2(matrix);
