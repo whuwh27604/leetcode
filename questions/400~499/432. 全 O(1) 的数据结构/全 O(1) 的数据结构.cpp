@@ -18,106 +18,171 @@ GetMinKey() - 返回 key 中值最小的任意一个。如果没有元素存在�
 
 #include <iostream>
 #include <unordered_map>
-#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
 
-class Node {
+class CrossNode {
 public:
     string key;
     int value;
-    Node* prev;
-    Node* next;
-    Node* up;
-    Node* down;
+    CrossNode* prev;
+    CrossNode* next;
+    CrossNode* up;
+    CrossNode* down;
 
-    Node() : key(""), value(0), prev(NULL), next(NULL), up(NULL), down(NULL) {}
-    Node(string& _key) : key(_key), value(1), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+    CrossNode() : key(""), value(0), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+    CrossNode(string& _key) : key(_key), value(1), prev(NULL), next(NULL), up(NULL), down(NULL) {}
+
+    bool isVNode() {
+        return prev == NULL;
+    }
 };
 
 class HList {
 public:
-    Node pseudoHead;
-    Node pseudoTail;
-
     HList() {
         pseudoHead.next = &pseudoTail;
         pseudoTail.prev = &pseudoHead;
+        pseudoHead.value = INT_MIN;
         pseudoTail.value = INT_MAX;
     }
 
-    void insert(Node* prevNode, Node* node, Node* nextNode) {
-        if (node->value == prevNode->value) {
-            prevNode->prev->next = node;
-            node->prev = prevNode->prev;
-            node->next = nextNode;
-            nextNode->prev = node;
-            node->down = prevNode;
-            prevNode->up = node;
-            prevNode->prev = prevNode->next = NULL;
-        }
-        else if (node->value == nextNode->value) {  // 相同的要合并，放到当前节点下面
-            prevNode->next = node;
-            node->prev = prevNode;
-            node->next = nextNode->next;
-            nextNode->next->prev = node;
-            node->down = nextNode;
-            nextNode->up = node;
-            nextNode->prev = nextNode->next = NULL;  // 纯纵向节点没有前后
-        }
-        else {
-            prevNode->next = node;
-            node->prev = prevNode;
-            node->next = nextNode;
-            nextNode->prev = node;
-        }
+    CrossNode* front() {
+        return pseudoHead.next;
     }
 
-    void remove(Node* node) {
-        Node* prevNode = node->prev;
-        Node* nextNode = node->next;
-
-        if (node->down == NULL) {  // 这一列只剩这一个节点了，直接删除
-            prevNode->next = nextNode;
-            nextNode->prev = prevNode;
-        }
-        else {  // 这一列还有其它节点，删了首节点第二个顶上来
-            prevNode->next = node->down;
-            node->down->prev = prevNode;
-            node->down->next = nextNode;
-            nextNode->prev = node->down;
-        }
+    CrossNode* back() {
+        return pseudoTail.prev;
     }
+
+    void insertAfter(CrossNode* after, CrossNode* node) {
+        node->prev = after;
+        node->next = after->next;
+        after->next->prev = node;
+        after->next = node;
+    }
+
+    void insertBefore(CrossNode* before, CrossNode* node) {
+        node->prev = before->prev;
+        node->next = before;
+        before->prev->next = node;
+        before->prev = node;
+    }
+
+    void remove(CrossNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+private:
+    CrossNode pseudoHead;
+    CrossNode pseudoTail;
 };
 
 class VList {
 public:
-    Node pseudoTop;
-    Node pseudoBottom;
-    int size;
-
     VList() {
         pseudoTop.down = &pseudoBottom;
         pseudoBottom.up = &pseudoTop;
-        size = 0;
     }
 
-    void insert(Node* node) {  // 只能插入在头部
+    CrossNode* top() {
+        return pseudoTop.down;
+    }
+
+    void pushTop(CrossNode* node) {
         node->up = &pseudoTop;
         node->down = pseudoTop.down;
         pseudoTop.down->up = node;
         pseudoTop.down = node;
-        ++size;
+        node->down->prev = node->down->next = NULL;  // 插入新的top后，原来的top变为一个纵向节点，不再是十字节点
     }
 
-    void remove(Node* node) {
+    void remove(CrossNode* node) {
         node->up->down = node->down;
         node->down->up = node->up;
-        if (--size == 0) {
-            node->up = node->down = NULL;  // 删光之后要置空，因为删除横向的时候会判断纵向还有没有节点
+    }
+
+    bool empty() {
+        return pseudoTop.down == &pseudoBottom;
+    }
+
+private:
+    CrossNode pseudoTop;
+    CrossNode pseudoBottom;
+};
+
+class CrossList {
+public:
+    CrossNode* front() {
+        return hlist.front();
+    }
+
+    CrossNode* back() {
+        return hlist.back();
+    }
+
+    CrossNode* prev(CrossNode* node) {
+        return vlists[node->value].top()->prev;
+    }
+
+    CrossNode* next(CrossNode* node) {
+        return vlists[node->value].top()->next;
+    }
+
+    void pushFront(CrossNode* node) {
+        insertBefore(hlist.front(), node);  // 插入到首节点前面，因为它们的value有可能相等
+    }
+
+    void insertAfter(CrossNode* after, CrossNode* node) {
+        if (after->value == node->value) {  // 如果插入的位置value相等，合并它们到纵向队列
+            CrossNode* prev = after->prev;
+            hlist.remove(after);  // 删除原来的十字节点
+            hlist.insertAfter(prev, node);  // 新插入的节点做为新的十字节点
+        }
+        else {
+            hlist.insertAfter(after, node);
+        }
+
+        vlists[node->value].pushTop(node);
+    }
+
+    void insertBefore(CrossNode* before, CrossNode* node) {
+        if (before->value == node->value) {
+            CrossNode* next = before->next;
+            hlist.remove(before);
+            hlist.insertBefore(next, node);
+        }
+        else {
+            hlist.insertBefore(before, node);
+        }
+
+        vlists[node->value].pushTop(node);
+    }
+
+    void remove(CrossNode* node) {
+        vlists[node->value].remove(node);  // 先删除纵向
+
+        if (!node->isVNode()) {
+            hlist.remove(node);  // 再删除横向
+
+            if (!vlists[node->value].empty()) {  // 如果纵向不为空，下一个纵向节点顶上来作为新的十字节点
+                hlist.insertAfter(node->prev, vlists[node->value].top());
+            }
+            else {
+                vlists.erase(node->value);  // 已经为空了，删除该纵向队列的数据结构
+            }
         }
     }
+
+    bool empty() {
+        return vlists.empty();
+    }
+
+private:
+    HList hlist;
+    unordered_map<int, VList> vlists;
 };
 
 class AllOne {
@@ -130,22 +195,16 @@ public:
     /** Inserts a new key <Key> with value 1. Or increments an existing key by 1. */
     void inc(string key) {
         if (keyNodes.count(key) == 0) {
-            Node* node = new Node(key);
+            CrossNode* node = new CrossNode(key);
             keyNodes[key] = node;
-            insert(&hlist.pseudoHead, node, hlist.pseudoHead.next);  // 新的节点肯定插入在pseudoHead后面
+            clist.pushFront(node);
         }
         else {
-            Node* node = keyNodes[key];
-            Node* prev = valueLists[node->value].pseudoTop.down->prev;
-            Node* next = valueLists[node->value].pseudoTop.down->next;
-            remove(node);  // 先删除这个节点
+            CrossNode* node = keyNodes[key];
+            CrossNode* next = clist.next(node);
+            clist.remove(node);  // 先删除这个节点
             ++node->value;
-            if (node->down == NULL) {  // 原来那一列已经没有了
-                insert(prev, node, next);
-            }
-            else {
-                insert(valueLists[node->value - 1].pseudoTop.down, node, next);
-            }
+            clist.insertBefore(next, node);
         }
     }
 
@@ -155,56 +214,31 @@ public:
             return;
         }
 
-        Node* node = keyNodes[key];
-        Node* prev = valueLists[node->value].pseudoTop.down->prev;
-        Node* next = valueLists[node->value].pseudoTop.down->next;
-        remove(node);  // 先删除这个节点
+        CrossNode* node = keyNodes[key];
+        CrossNode* prev = clist.prev(node);
+        clist.remove(node);  // 先删除这个节点
         if (--node->value == 0) {  // 减为0了就彻底干掉
             keyNodes.erase(key);
             delete node;
         }
-        else {  // 计数减1后再重新插入
-            if (node->down == NULL) {  // 原来那一列已经没有了
-                insert(prev, node, next);
-            }
-            else {
-                insert(prev, node, valueLists[node->value + 1].pseudoTop.down);
-            }
+        else {
+            clist.insertAfter(prev, node);
         }
     }
 
     /** Returns one of the keys with maximal value. */
     string getMaxKey() {
-        return hlist.pseudoHead.next == &hlist.pseudoTail ?  "" : hlist.pseudoTail.prev->key;
+        return clist.empty() ? "" : clist.back()->key;
     }
 
     /** Returns one of the keys with Minimal value. */
     string getMinKey() {
-        return hlist.pseudoHead.next == &hlist.pseudoTail ? "" : hlist.pseudoHead.next->key;
-    }
-
-    void remove(Node* node) {
-        VList& vlist = valueLists[node->value];
-        vlist.remove(node);  // 先从纵向队列删除
-
-        if (vlist.size == 0) {
-            valueLists.erase(node->value);
-        }
-
-        if (node->prev != NULL) {
-            hlist.remove(node);  // 再从横向队列删除
-        }
-    }
-
-    void insert(Node* prev, Node* node, Node* next) {
-        valueLists[node->value].insert(node);
-        hlist.insert(prev, node, next);
+        return clist.empty() ? "" : clist.front()->key;
     }
 
 private:
-    unordered_map<string, Node*> keyNodes;
-    unordered_map<int, VList> valueLists;
-    HList hlist;
+    unordered_map<string, CrossNode*> keyNodes;
+    CrossList clist;
 };
 
 int main()
