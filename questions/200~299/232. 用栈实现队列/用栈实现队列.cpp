@@ -35,70 +35,49 @@ class MyQueue {
 public:
     /** Initialize your data structure here. */
     MyQueue() {
-        whereIsData = DataInPushStack;
+
     }
 
     /** Push element x to the back of queue. */
     void push(int x) {
-        if (whereIsData == DataInPopStack) {
-            pop2PushStack();
+        while (!popStack.empty()) {
+            pushStack.push(popStack.top());
+            popStack.pop();
         }
 
         pushStack.push(x);
-        whereIsData = DataInPushStack;
     }
 
     /** Removes the element from in front of queue and returns that element. */
     int pop() {
-        if (whereIsData == DataInPushStack) {
-            push2PopStack();
+        while (!pushStack.empty()) {
+            popStack.push(pushStack.top());
+            pushStack.pop();
         }
 
         int x = popStack.top();
         popStack.pop();
-        whereIsData = DataInPopStack;
         return x;
     }
 
     /** Get the front element. */
     int peek() {
-        if (whereIsData == DataInPushStack) {
-            push2PopStack();
+        while (!pushStack.empty()) {
+            popStack.push(pushStack.top());
+            pushStack.pop();
         }
 
-        whereIsData = DataInPopStack;
         return popStack.top();
     }
 
     /** Returns whether the queue is empty. */
     bool empty() {
-        if (whereIsData == DataInPushStack) {
-            return pushStack.empty();
-        }
-        return popStack.empty();
+        return pushStack.empty() && popStack.empty();
     }
 
-    void push2PopStack() {
-        while (!pushStack.empty()) {
-            int x = pushStack.top();
-            pushStack.pop();
-            popStack.push(x);
-        }
-    }
-
-    void pop2PushStack() {
-        while (!popStack.empty()) {
-            int x = popStack.top();
-            popStack.pop();
-            pushStack.push(x);
-        }
-    }
-
+private:
     stack<int> pushStack;
     stack<int> popStack;
-    int whereIsData;
-    const int DataInPushStack = 0;
-    const int DataInPopStack = 1;
 };
 
 int main()
