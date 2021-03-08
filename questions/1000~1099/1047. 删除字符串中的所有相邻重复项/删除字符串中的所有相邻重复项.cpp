@@ -26,7 +26,6 @@ S 仅由小写英文字母组成。
 */
 
 #include <iostream>
-#include <stack>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -36,17 +35,12 @@ public:
     string removeDuplicates(string S) {
         string ans;
 
-        for (unsigned int i = 0; i < S.size(); i++) {
-            if (ans.empty()) {
-                ans.push_back(S[i]);
-                continue;
-            }
-
-            if (ans.back() == S[i]) {
+        for (char c : S) {
+            if (!ans.empty() && ans.back() == c) {
                 ans.pop_back();
             }
             else {
-                ans.push_back(S[i]);
+                ans.push_back(c);
             }
         }
 
