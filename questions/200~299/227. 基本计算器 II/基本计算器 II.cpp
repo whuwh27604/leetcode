@@ -26,9 +26,7 @@
 */
 
 #include <iostream>
-#include <stack>
-#include <unordered_map>
-#include <sstream>
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -36,107 +34,54 @@ using namespace std;
 class Solution {
 public:
     int calculate(string s) {
-        if (s.empty()) {
-            return 0;
-        }
+        queue<int> expression;
+        int i, j, size = s.size(), numA = 1, numB, oper = 3;
 
-        stack<string> postorderObjs;
-        inorder2Postorder(s, postorderObjs);
-
-        return calculate(postorderObjs);
-    }
-
-    void inorder2Postorder(string& s, stack<string>& postorderObjs) {
-        int i = 0, size = s.size();
-        stack<string> tmp;
-
-        while (i < size) {
+        for (i = 0; i < size; ++i) {
             char c = s[i];
-            if ((c >= '0') && (c <= '9')) {
-                tmp.push(getNumber(s, i));
-            }
-            else if ((c == '+') || (c == '-') || (c == '*') || (c == '/')) {
-                string opera(1, c);
-                if (postorderObjs.empty()) {
-                    postorderObjs.push(opera);
-                }
-                else {
-                    if ((c == '+') || (c == '-')) {
-                        while (!postorderObjs.empty()) {
-                            tmp.push(postorderObjs.top());
-                            postorderObjs.pop();
-                        }
-                    }
-                    else {
-                        while (!postorderObjs.empty() && ((postorderObjs.top() == "*") || (postorderObjs.top() == "/"))) {
-                            tmp.push(postorderObjs.top());
-                            postorderObjs.pop();
-                        }
-                    }
-                    postorderObjs.push(opera);
-                }
-            }
-
-            i++;
-        }
-
-        while (!tmp.empty()) {
-            postorderObjs.push(tmp.top());
-            tmp.pop();
-        }
-    }
-
-    string getNumber(string& s, int& index) {
-        int i = index, size = s.size();
-
-        while ((i < size) && (s[i] >= '0') && (s[i] <= '9')) {
-            i++;
-        }
-
-        string number(s, index, i - index);
-        index = i - 1;
-
-        return number;
-    }
-
-    int calculate(stack<string>& postorderObjs) {
-        stack<int> numbers;
-        int a, b;
-
-        while (!postorderObjs.empty()) {
-            string obj = postorderObjs.top();
-            postorderObjs.pop();
-
-            if ((obj[0] >= '0') && (obj[0] <= '9')) {
-                stringstream ss;
-                ss << obj;
-                int number;
-                ss >> number;
-                numbers.push(number);
+            if (c == ' ') {
                 continue;
             }
-
-            b = numbers.top();
-            numbers.pop();
-            a = numbers.top();
-            numbers.pop();
-            if (obj == "+") {
-                b = a + b;
+            else if (c == '+') {
+                expression.push(numA);
+                expression.push(1);
+                numA = 1;
+                oper = 3;
             }
-            else if (obj == "-") {
-                b = a - b;
+            else if (c == '-') {
+                expression.push(numA);
+                expression.push(2);
+                numA = 1;
+                oper = 3;
             }
-            else if (obj == "*") {
-                b = a * b;
+            else if (c == '*') {
+                oper = 3;
+            }
+            else if (c == '/') {
+                oper = 4;
             }
             else {
-                b = a / b;
-            }
+                for (j = i + 1; j < size && s[j] >= '0' && s[j] <= '9'; ++j) {}
 
-            numbers.push(b);
+                numB = stoi(string(s, i, j - i));
+                numA = oper == 3 ? numA * numB : numA / numB;
+                i = j - 1;
+            }
         }
 
-        return numbers.top();
+        expression.push(numA);
+        numA = expression.front();
+        expression.pop();
+
+        while (!expression.empty()) {
+            oper = expression.front();
+            expression.pop();
+            numB = expression.front();
+            expression.pop();
+            numA = oper == 1 ? numA + numB : numA - numB;
+        }
+
+        return numA;
     }
 };
 
@@ -145,7 +90,6 @@ int main()
     Solution o;
     CheckResult check;
 
-    check.checkInt(0, o.calculate(""));
     check.checkInt(5, o.calculate("5"));
     check.checkInt(3, o.calculate("1 + 2"));
     check.checkInt(-1, o.calculate(" 3 - 4 "));
