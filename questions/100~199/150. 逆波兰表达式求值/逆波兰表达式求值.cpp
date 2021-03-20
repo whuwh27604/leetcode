@@ -62,46 +62,34 @@ using namespace std;
 class Solution {
 public:
     int evalRPN(vector<string>& tokens) {
-        if (tokens.empty()) {
-            return 0;
-        }
-
         stack<int> numbers;
-        int a, b, number;
 
         for (string s : tokens) {
-            if (s == "+") {
-                get2Numbers(numbers, a, b);
-                numbers.push(a + b);
-            }
-            else if (s == "-") {
-                get2Numbers(numbers, a, b);
-                numbers.push(a - b);
-            }
-            else if (s == "*") {
-                get2Numbers(numbers, a, b);
-                numbers.push(a * b);
-            }
-            else if (s == "/") {
-                get2Numbers(numbers, a, b);
-                numbers.push(a / b);
+            if ((s[0] >= '0' && s[0] <= '9') || (s.size() != 1)) {
+                numbers.push(stoi(s));
             }
             else {
-                stringstream ss;
-                ss << s;
-                ss >> number;
-                numbers.push(number);
+                int b = numbers.top();
+                numbers.pop();
+                int a = numbers.top();
+                numbers.pop();
+
+                if (s == "+") {
+                    numbers.push(a + b);
+                }
+                else if (s == "-") {
+                    numbers.push(a - b);
+                }
+                else if (s == "*") {
+                    numbers.push(a * b);
+                }
+                else {
+                    numbers.push(a / b);
+                }
             }
         }
 
         return numbers.top();
-    }
-
-    void get2Numbers(stack<int>& numbers, int& a, int& b) {
-        b = numbers.top();
-        numbers.pop();
-        a = numbers.top();
-        numbers.pop();
     }
 };
 
@@ -110,10 +98,7 @@ int main()
     Solution o;
     CheckResult check;
 
-    vector<string> tokens = {};
-    check.checkInt(0, o.evalRPN(tokens));
-
-    tokens = { "1","2","+" };
+    vector<string> tokens = { "1","2","+" };
     check.checkInt(3, o.evalRPN(tokens));
 
     tokens = { "5","3","-" };
@@ -130,6 +115,12 @@ int main()
 
     tokens = { "4", "13", "5", "/", "+" };
     check.checkInt(6, o.evalRPN(tokens));
+
+    tokens = { "6" };
+    check.checkInt(6, o.evalRPN(tokens));
+
+    tokens = { "-4" };
+    check.checkInt(-4, o.evalRPN(tokens));
 
     tokens = { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" };
     check.checkInt(22, o.evalRPN(tokens));
