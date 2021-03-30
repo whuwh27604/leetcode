@@ -37,51 +37,23 @@ using namespace std;
 class Solution {
 public:
     bool searchMatrix(vector<vector<int>>& matrix, int target) {
-        if (matrix.empty() || matrix[0].empty()) {
-            return false;
+        int row = matrix.size(), column = matrix[0].size(), low = 0, high = row * column - 1;
+
+        while (low <= high) {
+            int middle = (low + high) / 2, r = middle / column, c = middle % column;
+            if (matrix[r][c] == target) {
+                return true;
+            }
+
+            if (matrix[r][c] > target) {
+                high = middle - 1;
+            }
+            else {
+                low = middle + 1;
+            }
         }
 
-        int m = matrix.size(), n = matrix[0].size();
-        int row = binarySearchRow(matrix, target, n - 1, 0, m - 1);
-        if (row == -1) {
-            return false;
-        }
-
-        return (binarySearchColumn(matrix, target, row, 0, n - 1) != -1);
-    }
-
-    int binarySearchRow(vector<vector<int>>& matrix, int target, int maxColumn, int down, int up) {
-        if (down > up) {
-            return -1;
-        }
-
-        int middle = (down + up) / 2;
-        if ((matrix[middle][0] <= target) && (target <= matrix[middle][maxColumn])) {
-            return middle;
-        }
-
-        if (target < matrix[middle][0]) {
-            return binarySearchRow(matrix, target, maxColumn, down, middle - 1);
-        }
-
-        return binarySearchRow(matrix, target, maxColumn, middle + 1, up);
-    }
-
-    int binarySearchColumn(vector<vector<int>>& matrix, int target, int row, int left, int right) {
-        if (left > right) {
-            return -1;
-        }
-
-        int middle = (left + right) / 2;
-        if (matrix[row][middle] == target) {
-            return middle;
-        }
-
-        if (target < matrix[row][middle]) {
-            return binarySearchColumn(matrix, target, row, left, middle - 1);
-        }
-
-        return binarySearchColumn(matrix, target, row, middle + 1, right);
+        return false;
     }
 };
 
@@ -116,12 +88,6 @@ int main()
 
     matrix = { {1,3,5,7},{10,11,16,20},{23,30,34,50} };
     check.checkBool(false, o.searchMatrix(matrix, 8));
-
-    matrix = {  };
-    check.checkBool(false, o.searchMatrix(matrix, 13));
-
-    matrix = { {} };
-    check.checkBool(false, o.searchMatrix(matrix, 1));
 
     matrix = { {1,3,5,7} };
     check.checkBool(true, o.searchMatrix(matrix, 1));
