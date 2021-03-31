@@ -80,7 +80,7 @@ public:
 
             for (auto& next : fromTos[node]) {
                 if (distance + next.first <= maxMoves) {
-                    dijkstra.push({ distance + next.first, next.second });  // 将下一跳加入队列，并不意味着马上回访问它，这需要根据优先队列的顺序
+                    dijkstra.push({ distance + next.first, next.second });  // 将下一跳加入队列，并不意味着马上会访问它，这需要根据优先队列的顺序
                     allEdges[hashKey(node, next.second)].second = true;  // 无论何时访问，该边所有节点确实都可达
                 }
             }
