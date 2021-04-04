@@ -32,9 +32,8 @@ class Solution {
 public:
     void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
         vector<int> mergeNums(m + n);
-        int i = 0;
-        int j = 0;
-        int mergeIndex = 0;
+        int i = 0, j = 0, mergeIndex = 0;
+
         while ((i < m) && (j < n)) {
             if (nums1[i] < nums2[j]) {
                 mergeNums[mergeIndex++] = nums1[i++];
@@ -48,16 +47,12 @@ public:
             }
         }
 
-        if (i == m) {
-            while (j < n) {
-                mergeNums[mergeIndex++] = nums2[j++];
-            }
+        while (j < n) {
+            mergeNums[mergeIndex++] = nums2[j++];
         }
 
-        if (j == n) {
-            while (i < m) {
-                mergeNums[mergeIndex++] = nums1[i++];
-            }
+        while (i < m) {
+            mergeNums[mergeIndex++] = nums1[i++];
         }
 
         nums1 = mergeNums;
