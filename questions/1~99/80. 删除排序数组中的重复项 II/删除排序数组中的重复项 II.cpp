@@ -47,25 +47,18 @@ using namespace std;
 class Solution {
 public:
     int removeDuplicates(vector<int>& nums) {
-        int i, len = nums.size(), tail = 0, count = 1;
-        if (len <= 2) {
-            return len;
-        }
+        int prev = INT_MIN, tail = 0, count = 0;
 
-        for (i = 1; i < len; i++) {
-            if (nums[i] == nums[i - 1]) {
-                count++;
-                if (count == 2) {
-                    nums[++tail] = nums[i];
-                }
-            }
-            else {
-                count = 1;
-                nums[++tail] = nums[i];
+        for (int num : nums) {
+            count = num == prev ? count + 1 : 1;
+            prev = num;
+
+            if (count <= 2) {
+                nums[tail++] = num;
             }
         }
 
-        return tail + 1;
+        return tail;
     }
 };
 
