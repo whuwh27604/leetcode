@@ -36,30 +36,22 @@ using namespace std;
 class Solution {
 public:
     bool isUgly(int num) {
-        if (num < 1) {
-            return false;
+        while (num > 1) {
+            if (num % 2 == 0) {
+                num /= 2;
+            }
+            else if (num % 3 == 0) {
+                num /= 3;
+            }
+            else if (num % 5 == 0) {
+                num /= 5;
+            }
+            else {
+                return false;
+            }
         }
 
-        if ((num == 1) || (num == 2) || (num == 3) || (num == 5)) {
-            return true;
-        }
-
-        int quotient = (num / 2);
-        if ((quotient * 2) == num) {
-            return isUgly(quotient);
-        }
-
-        quotient = (num / 3);
-        if ((quotient * 3) == num) {
-            return isUgly(quotient);
-        }
-
-        quotient = (num / 5);
-        if ((quotient * 5) == num) {
-            return isUgly(quotient);
-        }
-
-        return false;
+        return num == 1;
     }
 };
 
@@ -71,8 +63,13 @@ int main()
     check.checkBool(true, o.isUgly(6));
     check.checkBool(true, o.isUgly(8));
     check.checkBool(false, o.isUgly(14));
+    check.checkBool(false, o.isUgly(99));
     check.checkBool(true, o.isUgly(1));
+    check.checkBool(true, o.isUgly(2));
+    check.checkBool(true, o.isUgly(3));
+    check.checkBool(true, o.isUgly(5));
     check.checkBool(false, o.isUgly(0));
+    check.checkBool(false, o.isUgly(-2));
     check.checkBool(false, o.isUgly(-1118));
     check.checkBool(true, o.isUgly(2000000000));
 }
