@@ -30,10 +30,6 @@ class Solution {
 public:
     int rob(vector<int>& nums) {
         int size = nums.size();
-        if (size == 0) {
-            return 0;
-        }
-
         if (size == 1) {
             return nums[0];
         }
@@ -42,9 +38,7 @@ public:
             return max(nums[0], nums[1]);
         }
 
-        int dpN1 = dpN(nums, 0, size - 1);  // 选第一个，不选最后一个
-        int dpN2 = dpN(nums, 1, size);  // 不选第一个，选最后一个
-        return max(dpN1, dpN2);
+        return max(dpN(nums, 0, size - 1), dpN(nums, 1, size));  // 选第一个，不选最后一个；不选第一个，选最后一个
     }
 
     int dpN(vector<int>& nums, int start, int N) {
