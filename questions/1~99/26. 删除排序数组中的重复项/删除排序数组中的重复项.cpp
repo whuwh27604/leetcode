@@ -52,20 +52,17 @@ using namespace std;
 class Solution {
 public:
     int removeDuplicates(vector<int>& nums) {
-        int inputLen = nums.size();
-        if ((inputLen == 0) || (inputLen == 1)) {
-            return inputLen;
+        int size = nums.size(), last = 0, current;
+        if (size == 0) {
+            return 0;
         }
 
-        int last = 0;
-        int current = 1;
-        while (current < inputLen) {
+        for (current = 1; current < size; ++current) {
             if (nums[current] != nums[last]) {
-                last += 1;
-                nums[last] = nums[current];
+                nums[++last] = nums[current];
             }
-            current++;
         }
+
         return last + 1;
     }
 };
