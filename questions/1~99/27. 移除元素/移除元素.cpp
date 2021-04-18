@@ -56,20 +56,14 @@ using namespace std;
 class Solution {
 public:
     int removeElement(vector<int>& nums, int val) {
-        int inputLen = nums.size();
-        if (inputLen == 0) {
-            return inputLen;
+        int last = 0;
+
+        for (int num : nums) {
+            if (num != val) {
+                nums[last++] = num;
+            }
         }
 
-        int last = 0;
-        int current = 0;
-        while (current < inputLen) {
-            if (nums[current] != val) {
-                nums[last] = nums[current];
-                last += 1;
-            }
-            current++;
-        }
         return last;
     }
 };
