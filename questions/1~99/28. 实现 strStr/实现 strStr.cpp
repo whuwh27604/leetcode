@@ -31,36 +31,21 @@ using namespace std;
 class Solution {
 public:
     int strStr(string haystack, string needle) {
-        int haystackLen = haystack.size();
-        int needleLen = needle.size();
-        int current = 0;
+        int i, j, hsize = haystack.size(), nsize = needle.size();
 
-        if (needleLen == 0) {
-            return 0;
-        }
-
-        if (haystackLen < needleLen) {
-            return -1;
-        }
-
-        while (current <= (haystackLen - needleLen)) {
-            if (haystack[current] == needle[0]) {
-                if (compare(&haystack[current], &needle[0], needleLen)) {
-                    return current;
+        for (i = 0; i <= (hsize - nsize); ++i) {
+            for (j = 0; j < nsize; ++j) {
+                if (haystack[i + j] != needle[j]) {
+                    break;
                 }
             }
-            current++;
-        }
-        return -1;
-    }
 
-    bool compare(char* s1, char* s2, int len) {
-        for (int i = 0; i < len; i++) {
-            if (s1[i] != s2[i]) {
-                return false;
+            if (j == nsize) {
+                return i;
             }
         }
-        return true;
+
+        return -1;
     }
 };
 
