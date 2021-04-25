@@ -59,7 +59,7 @@ using namespace std;
 class Solution {
 public:
     int shipWithinDays(vector<int>& weights, int D) {
-        int low, high;
+        int low = 0, high = 0;
         init(weights, low, high);
 
         while (low < high) {
@@ -76,8 +76,6 @@ public:
     }
 
     void init(vector<int>& weights, int& low, int& high) {
-        high = 0;
-
         for (int weight : weights) {
             low = max(low, weight);
             high += weight;
