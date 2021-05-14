@@ -52,137 +52,50 @@ C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
 
 using namespace std;
 
-class romanChar {
-public:
-    char preChar;
-    romanChar(char pre) {
-        preChar = pre;
-    }
-    virtual int value() = 0;
-};
-
-class romanCharI : public romanChar {
-public:
-    romanCharI(char pre) : romanChar(pre) {};
-
-    int value() {
-        return 1;
-    }
-};
-
-class romanCharV : public romanChar {
-public:
-    romanCharV(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'I') {
-            return 3;
-        }
-        return 5;
-    }
-};
-
-class romanCharX : public romanChar {
-public:
-    romanCharX(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'I') {
-            return 8;
-        }
-        return 10;
-    }
-};
-
-class romanCharL : public romanChar {
-public:
-    romanCharL(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'X') {
-            return 30;
-        }
-        return 50;
-    }
-};
-
-class romanCharC : public romanChar {
-public:
-    romanCharC(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'X') {
-            return 80;
-        }
-        return 100;
-    }
-};
-
-class romanCharD : public romanChar {
-public:
-    romanCharD(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'C') {
-            return 300;
-        }
-        return 500;
-    }
-};
-
-class romanCharM : public romanChar {
-public:
-    romanCharM(char pre) : romanChar(pre) {};
-
-    int value() {
-        if (preChar == 'C') {
-            return 800;
-        }
-        return 1000;
-    }
-};
-
 class Solution {
 public:
     int romanToInt(string s) {
-        int number = 0;
-        char preChar = 'A';
-        romanChar* character = NULL;
+        int num = 0;
+        char prev = 0;
 
-        for (unsigned int i = 0; i < s.size(); i++) {
-            switch (s[i]) {
-                case 'I':
-                    character = new romanCharI(preChar);
-                    break;
-                case 'V':
-                    character = new romanCharV(preChar);
-                    break;
-                case 'X':
-                    character = new romanCharX(preChar);
-                    break;
-                case 'L':
-                    character = new romanCharL(preChar);
-                    break;
-                case 'C':
-                    character = new romanCharC(preChar);
-                    break;
-                case 'D':
-                    character = new romanCharD(preChar);
-                    break;
-                case 'M':
-                    character = new romanCharM(preChar);
-                    break;
-                default:
-                    delete character;
-                    return 0;
+        for (char c : s) {
+            switch (c) {
+            case 'I':
+                num += 1;
+                break;
+
+            case 'V':
+                num += (prev == 'I' ? 3 : 5);
+                break;
+
+            case 'X':
+                num += (prev == 'I' ? 8 : 10);
+                break;
+
+            case 'L':
+                num += (prev == 'X' ? 30 : 50);
+                break;
+
+            case 'C':
+                num += (prev == 'X' ? 80 : 100);
+                break;
+
+            case 'D':
+                num += (prev == 'C' ? 300 : 500);
+                break;
+
+            case 'M':
+                num += (prev == 'C' ? 800 : 1000);
+                break;
+
+            default:
+                break;
             }
 
-            preChar = s[i];
-            number += character->value();
-            delete character;
+            prev = c;
         }
 
-        return number;
+        return num;
     }
 };
 
@@ -200,6 +113,8 @@ int main()
     result.checkInt(58, o.romanToInt(s));
     s = "MCMXCIV";
     result.checkInt(1994, o.romanToInt(s));
+    s = "CD";
+    result.checkInt(400, o.romanToInt(s));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
