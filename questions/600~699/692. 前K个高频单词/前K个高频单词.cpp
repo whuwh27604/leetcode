@@ -35,59 +35,43 @@
 */
 
 #include <iostream>
-#include <set>
 #include <unordered_map>
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
 
-struct pairCompare {
-    bool operator() (const pair<string, int>& v1, const pair<string, int>& v2) const {
-        if (v1.second > v2.second) {
-            return true;
-        }
-        else if (v1.second < v2.second) {
-            return false;
-        }
-        else {
-            return v1.first < v2.first;
-        }
+class PairComapre {
+public:
+    bool operator() (const pair<int, string>& p1, const pair<int, string>& p2) const {
+        return p1.first == p2.first ? p1.second < p2.second : p1.first > p2.first;
     }
 };
 
 class Solution {
 public:
     vector<string> topKFrequent(vector<string>& words, int k) {
-        unordered_map<string, int> wordCount;
-        countWords(words, wordCount);
+        unordered_map<string, int> wordsCount;
+        for (string& word : words) {
+            ++wordsCount[word];
+        }
 
-        set<pair<string, int>, pairCompare> topWords;
-        for (auto iter = wordCount.begin(); iter != wordCount.end(); iter++) {
-            topWords.insert({ iter->first, iter->second });
+        priority_queue<pair<int, string>, vector<pair<int, string>>, PairComapre> topK;
+        for (auto iter = wordsCount.begin(); iter != wordsCount.end(); ++iter) {
+            topK.push({ iter->second, iter->first });
 
-            if ((int)topWords.size() > k) {
-                topWords.erase(--topWords.end());
+            if ((int)topK.size() > k) {
+                topK.pop();
             }
         }
 
-        vector<string> ans;
-        for (auto iter = topWords.begin(); iter != topWords.end(); iter++) {
-            ans.push_back(iter->first);
+        vector<string> ans(k);
+        while (!topK.empty()) {
+            ans[--k] = topK.top().second;
+            topK.pop();
         }
 
         return ans;
-    }
-
-    void countWords(vector<string>& words, unordered_map<string, int>& wordCount) {
-        for (string& word : words) {
-            auto iter = wordCount.find(word);
-            if (iter == wordCount.end()) {
-                wordCount[word] = 1;
-            }
-            else {
-                iter->second++;
-            }
-        }
     }
 };
 
@@ -119,6 +103,11 @@ int main()
     words = { "the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is" };
     actual = o.topKFrequent(words, 1);
     expected = { "the" };
+    check.checkStringVector(expected, actual);
+
+    words = { "a", "ab", "abc", "abcd" };
+    actual = o.topKFrequent(words, 3);
+    expected = { "a", "ab", "abc" };
     check.checkStringVector(expected, actual);
 }
 
