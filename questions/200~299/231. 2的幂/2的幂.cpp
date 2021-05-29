@@ -29,21 +29,7 @@ using namespace std;
 class Solution {
 public:
     bool isPowerOfTwo(int n) {
-        if (n < 1) {
-            return false;
-        }
-        if (n == 1) {
-            return true;
-        }
-
-        while (n != 1) {
-            if ((n & 1) == 1) {
-                return false;
-            }
-            n >>= 1;
-        }
-
-        return true;
+        return (n > 0) && ((n & (n - 1)) == 0);
     }
 };
 
