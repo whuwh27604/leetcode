@@ -32,24 +32,18 @@ using namespace std;
 class Solution {
 public:
     int findMaxLength(vector<int>& nums) {
-        int i, size = nums.size(), count = 0, maxLen = 0;
-        unordered_map<int, int> countIndex;
-        countIndex[0] = -1;
+        int i, size = nums.size(), diff = size, maxLen = 0;
+        vector<int> diffIndices(2 * size + 1, -2);
+        diffIndices[size] = -1;
 
-        for (i = 0; i < size; i++) {
-            if (nums[i] == 0) {
-                count--;
+        for (i = 0; i < size; ++i) {
+            nums[i] == 0 ? --diff : ++diff;
+
+            if (diffIndices[diff] == -2) {
+                diffIndices[diff] = i;
             }
             else {
-                count++;
-            }
-
-            auto iter = countIndex.find(count);
-            if (iter == countIndex.end()) {
-                countIndex[count] = i;
-            }
-            else {
-                maxLen = max(maxLen, i - iter->second);  // 每一次count相等时，说明在(iter->second, i]这个区间内0,1个数相等
+                maxLen = max(maxLen, i - diffIndices[diff]);  // 每一次diff相等时，说明在(index, i]这个区间内0,1个数相等
             }
         }
 
