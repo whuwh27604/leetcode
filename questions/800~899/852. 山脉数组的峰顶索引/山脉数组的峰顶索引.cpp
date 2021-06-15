@@ -1,27 +1,43 @@
 ﻿/* 山脉数组的峰顶索引.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-我们把符合下列属性的数组 A 称作山脉：
-
-A.length >= 3
-存在 0 < i < A.length - 1 使得A[0] < A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1]
-给定一个确定为山脉的数组，返回任何满足 A[0] < A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1] 的 i 的值。
+符合下列属性的数组 arr 称为 山脉数组 ：
+arr.length >= 3
+存在 i（0 < i < arr.length - 1）使得：
+arr[0] < arr[1] < ... arr[i-1] < arr[i]
+arr[i] > arr[i+1] > ... > arr[arr.length - 1]
+给你由整数组成的山脉数组 arr ，返回任何满足 arr[0] < arr[1] < ... arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1] 的下标 i 。
 
  
 
 示例 1：
 
-输入：[0,1,0]
+输入：arr = [0,1,0]
 输出：1
 示例 2：
 
-输入：[0,2,1,0]
+输入：arr = [0,2,1,0]
 输出：1
+示例 3：
+
+输入：arr = [0,10,5,2]
+输出：1
+示例 4：
+
+输入：arr = [3,4,5,1]
+输出：2
+示例 5：
+
+输入：arr = [24,69,100,99,79,78,67,36,26,19]
+输出：2
  
 
 提示：
 
-3 <= A.length <= 10000
-0 <= A[i] <= 10^6
-A 是如上定义的山脉
+3 <= arr.length <= 104
+0 <= arr[i] <= 106
+题目数据保证 arr 是一个山脉数组
+ 
+
+进阶：很容易想到时间复杂度 O(n) 的解决方案，你可以设计一个 O(log(n)) 的解决方案吗？
 
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/peak-index-in-a-mountain-array
@@ -36,32 +52,44 @@ using namespace std;
 class Solution {
 public:
     int peakIndexInMountainArray(vector<int>& A) {
-        return peakIndex(A, 0, A.size() - 1);
-    }
+        int left = 0, right = A.size() - 1, middle = (left + right) / 2;
 
-    int peakIndex(vector<int>& A, int left, int right) {
-        int middle = ((left + right) / 2);
-        if ((A[middle] > A[middle - 1]) && (A[middle] > A[middle + 1])) {
-            return middle;
+        while (A[middle] < A[middle - 1] || A[middle] < A[middle + 1]) {
+            if (A[middle] > A[middle - 1]) {
+                left = middle;
+            }
+            else {
+                right = middle;
+            }
+
+            middle = (left + right) / 2;
         }
 
-        if (A[middle] < A[middle + 1]) {
-            return peakIndex(A, middle + 1, right);
-        }
-
-        return peakIndex(A, left, middle - 1);
+        return middle;
     }
 };
 
 int main()
 {
-    Solution o;
     CheckResult check;
+    Solution o;
 
     vector<int> A = { 0,1,0 };
     check.checkInt(1, o.peakIndexInMountainArray(A));
 
     A = { 0,2,1,0 };
+    check.checkInt(1, o.peakIndexInMountainArray(A));
+
+    A = { 0,10,5,2 };
+    check.checkInt(1, o.peakIndexInMountainArray(A));
+
+    A = { 3,4,5,1 };
+    check.checkInt(2, o.peakIndexInMountainArray(A));
+
+    A = { 24,69,100,99,79,78,67,36,26,19 };
+    check.checkInt(2, o.peakIndexInMountainArray(A));
+
+    A = { 3,5,3,2,0 };
     check.checkInt(1, o.peakIndexInMountainArray(A));
 }
 
