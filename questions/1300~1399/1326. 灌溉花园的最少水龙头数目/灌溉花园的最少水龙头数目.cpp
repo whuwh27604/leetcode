@@ -70,7 +70,7 @@ public:
             rightmosts[left] = max(rightmosts[left], right);
         }
 
-        for (i = 0; i < n; ++i) {  // 位置n一定是靠其它水龙头覆盖的，所以不要遍历这个位置
+        for (i = 0; i < n; ++i) {  // 位置n一定是前面就能计算到的，所以不要遍历这个位置
             rightmost = max(rightmost, rightmosts[i]);
 
             if (i == breakpoint) {
