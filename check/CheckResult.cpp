@@ -47,15 +47,25 @@ void CheckResult::checkIntVectorInNums(vector<int>& expected, vector<int>& actua
 		}
 	}
 
-	cout << "result : " << (result ? "success," : "fail   ,") << " expected : ";
+	cout << "result : " << (result ? "success" : "fail fail fail fail fail fail fail fail fail fail fail fail") << endl << "    expected : { ";
 	for (unsigned int i = 0; i < nums; ++i) {
-		cout << expected[i] << " ";
+		if (i == nums - 1) {
+			cout << expected[i];
+		}
+		else {
+			cout << expected[i] << ",";
+		}
 	}
-	cout << ",  actual : ";
+	cout << " }" << endl << "    actual   : { ";
 	for (unsigned int i = 0; i < nums; ++i) {
-		cout << actual[i] << " ";
+		if (i == nums - 1) {
+			cout << actual[i];
+		}
+		else {
+			cout << actual[i] << ",";
+		}
 	}
-	cout << endl;
+	cout << " }" << endl << endl;
 }
 
 void CheckResult::checkIntVectorRandomOrder(vector<int>& expected, vector<int>& actual) {
@@ -169,6 +179,11 @@ output:
 void CheckResult::checkUint(unsigned int expected, unsigned int actual) {
 	cout << "result : " << (expected == actual ? "success," : "fail   ,")
 		<< " expected : " << left << setw(10) << expected << ",  actual : " << setw(10) << actual << endl;
+}
+
+void CheckResult::checkLongLong(long long expected, long long actual) {
+	cout << "result : " << (expected == actual ? "success," : "fail   ,")
+		<< " expected : " << left << setw(20) << expected << ",  actual : " << setw(20) << actual << endl;
 }
 
 void CheckResult::checkDouble(double expected, double actual) {
