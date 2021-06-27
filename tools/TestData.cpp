@@ -49,3 +49,29 @@ vector<vector<int>> getIntVectorVector(string filename) {
 
     return data;
 }
+
+string getString(string filename) {
+    ifstream in(filename, ios::binary);
+    string fileContext;
+    in >> fileContext;
+
+    return string(fileContext, 1, fileContext.size() - 2);
+}
+
+vector<string> getStringVector(string filename) {
+    vector<string> data;
+    ifstream in(filename, ios::binary);
+    string fileContext;
+    in >> fileContext;
+    int start = 2;
+
+    for (int i = 2; i < (int)fileContext.size(); ++i) {
+        if (fileContext[i] == '"') {
+            data.push_back(string(fileContext, start, i - start));
+            start = i + 3;
+            i += 2;
+        }
+    }
+
+    return data;
+}
