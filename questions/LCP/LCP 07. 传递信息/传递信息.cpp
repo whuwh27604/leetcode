@@ -35,8 +35,7 @@
 */
 
 #include <iostream>
-#include <unordered_map>
-#include <unordered_set>
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -44,40 +43,45 @@ using namespace std;
 class Solution {
 public:
     int numWays(int n, vector<vector<int>>& relation, int k) {
-        unordered_map<int, unordered_set<int>> multiRelation;
+        vector<vector<bool>> adjs(n, vector<bool>(n, false));
+        buildAdjs(relation, adjs);
 
-        for (unsigned int i = 0; i < relation.size(); i++) {
-            multiRelation[relation[i][0]].insert(relation[i][1]);
-        }
+        int round = 0, ways = 0;
+        queue<int> bfs;
+        bfs.push(0);
 
-        list<int> destinations;
-        destinations.push_back(0);
+        while (!bfs.empty() && round != k) {
+            int i, size = bfs.size();
 
-        while (k-- != 0) {
-            int count = destinations.size();
-            while (count-- != 0) {
-                int from = destinations.front();
-                auto iter = multiRelation.find(from);
-                if (iter != multiRelation.end()) {
-                    unordered_set<int>& to = iter->second;
-                    for (auto iter2 = to.begin(); iter2 != to.end(); iter2++) {
-                        destinations.push_back(*iter2);
+            for (i = 0; i < size; ++i) {
+                int node = bfs.front();
+                bfs.pop();
+
+                for (int next = 0; next < n; ++next) {
+                    if (adjs[node][next]) {
+                        bfs.push(next);
                     }
                 }
-
-                destinations.pop_front();
             }
+
+            ++round;
         }
 
-        int paths = 0;
-        n -= 1;
-        for (auto iter = destinations.begin(); iter != destinations.end(); iter++) {
-            if (*iter == n) {
-                paths++;
+        while (!bfs.empty()) {
+            if (bfs.front() == n - 1) {
+                ++ways;
             }
+
+            bfs.pop();
         }
 
-        return paths;
+        return ways;
+    }
+
+    void buildAdjs(vector<vector<int>>& relation, vector<vector<bool>>& adjs) {
+        for (auto& rel : relation) {
+            adjs[rel[0]][rel[1]] = true;
+        }
     }
 };
 
