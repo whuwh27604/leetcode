@@ -18,6 +18,7 @@
 */
 
 #include <iostream>
+#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -25,29 +26,21 @@ using namespace std;
 class Solution {
 public:
     vector<int> findErrorNums(vector<int>& nums) {
+        int sum = 0, size = nums.size();
         vector<int> ans;
-        bool find = false;
-        int numsSum = 0, serialSum = 0, len = nums.size();
-        short* numsTable = new short[len + 1]();
+        vector<bool> numbers(10001, false);
 
-        for (int i = 0; i < len; i++) {
-            int number = nums[i];
-            numsSum += number;
-            serialSum += (i + 1);
-
-            if (find) {
-                continue;
+        for (int num : nums) {
+            if (numbers[num]) {
+                ans.push_back(num);
             }
-
-            if (numsTable[number] == 1) {
-                find = true;
-                ans.push_back(number);
+            else {
+                numbers[num] = true;
+                sum += num;
             }
-            numsTable[number] = 1;
         }
 
-        ans.push_back(serialSum - numsSum + ans[0]);
-        delete[] numsTable;
+        ans.push_back((1 + size) * size / 2 - sum);
 
         return ans;
     }
