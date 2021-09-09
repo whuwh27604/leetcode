@@ -56,7 +56,7 @@ class Solution {
 public:
     vector<vector<int>> verticalTraversal(TreeNode* root) {
         //   x        y       vals
-        map<int, map<int, set<int>>> nodes;
+        map<int, map<int, multiset<int>>> nodes;
         DFS(root, 0, 0, nodes);
 
         vector<vector<int>> ans;
@@ -65,8 +65,8 @@ public:
         return ans;
     }
 
-    void DFS(TreeNode* root, int x, int y, map<int, map<int, set<int>>>& nodes) {
-        saveNode(root->val, x, y, nodes);
+    void DFS(TreeNode* root, int x, int y, map<int, map<int, multiset<int>>>& nodes) {
+        nodes[x][y].insert(root->val);
 
         if (root->left != NULL) {
             DFS(root->left, x - 1, y - 1, nodes);
@@ -77,16 +77,7 @@ public:
         }
     }
 
-    void saveNode(int value, int x, int y, map<int, map<int, set<int>>>& nodes) {
-        if (nodes.count(x) == 0) {
-            nodes[x] = { {y, {value}} };
-        }
-        else {
-            nodes[x][y].insert(value);
-        }
-    }
-
-    void output(map<int, map<int, set<int>>>& nodes, vector<vector<int>>& ans) {
+    void output(map<int, map<int, multiset<int>>>& nodes, vector<vector<int>>& ans) {
         for (auto itX = nodes.begin(); itX != nodes.end(); ++itX) {
             ans.push_back({});
 
@@ -122,6 +113,16 @@ int main()
     values = { 1 };
     actual = o.verticalTraversal(createTree(values));
     expected = { {1} };
+    check.checkIntVectorVector(expected, actual);
+
+    values = { 3,1,4,0,2,2 };
+    actual = o.verticalTraversal(createTree(values));
+    expected = { {0},{1},{3,2,2},{4} };
+    check.checkIntVectorVector(expected, actual);
+
+    values = { 1,5,6 };
+    actual = o.verticalTraversal(createTree(values));
+    expected = { {5},{1},{6} };
     check.checkIntVectorVector(expected, actual);
 }
 
