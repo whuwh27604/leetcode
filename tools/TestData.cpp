@@ -50,6 +50,27 @@ vector<vector<int>> getIntVectorVector(string filename) {
     return data;
 }
 
+vector<vector<char>> getCharVectorVector(string filename) {
+    vector<vector<char>> data;
+    ifstream in(filename, ios::binary);
+    string fileContext;
+    in >> fileContext;
+    int start = 0;
+
+    for (int i = 1; i < (int)fileContext.size(); ++i) {
+        if (fileContext[i] == '[') {
+            data.push_back({});
+        }
+        else if (fileContext[i] == '\"') {
+            i += 1;
+            data.back().push_back(fileContext[i]);
+            i += 2;
+        }
+    }
+
+    return data;
+}
+
 string getString(string filename) {
     ifstream in(filename, ios::binary);
     string fileContext;
