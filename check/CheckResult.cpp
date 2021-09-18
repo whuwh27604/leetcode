@@ -186,6 +186,53 @@ void CheckResult::checkLongLong(long long expected, long long actual) {
 		<< " expected : " << left << setw(20) << expected << ",  actual : " << setw(20) << actual << endl;
 }
 
+void CheckResult::checkLongLongVectorVector(vector<vector<long long>>& expected, vector<vector<long long>>& actual) {
+	cout << "result : " << (expected == actual ? "success" : "fail fail fail fail fail fail fail fail fail fail fail fail") << endl << "    expected : { ";
+	for (unsigned int i = 0; i < expected.size(); ++i) {
+		cout << "{";
+		for (unsigned int j = 0; j < expected[i].size(); ++j) {
+			if (j == expected[i].size() - 1) {
+				cout << expected[i][j];
+			}
+			else {
+				cout << expected[i][j] << ",";
+			}
+		}
+		if (i == expected.size() - 1) {
+			cout << "}";
+		}
+		else {
+			cout << "}, ";
+		}
+	}
+
+	cout << " }" << endl << "    actual   : { ";
+	for (unsigned int i = 0; i < actual.size(); ++i) {
+		cout << "{";
+		for (unsigned int j = 0; j < actual[i].size(); ++j) {
+			if (j == actual[i].size() - 1) {
+				cout << actual[i][j];
+			}
+			else {
+				cout << actual[i][j] << ",";
+			}
+		}
+		if (i == actual.size() - 1) {
+			cout << "}";
+		}
+		else {
+			cout << "}, ";
+		}
+	}
+	cout << " }" << endl << endl;
+}
+
+void CheckResult::checkLongLongVectorRandomOrderVector(vector<vector<long long>>& expected, vector<vector<long long>>& actual) {
+	sort(expected.begin(), expected.end());
+	sort(actual.begin(), actual.end());
+	checkLongLongVectorVector(expected, actual);
+}
+
 void CheckResult::checkDouble(double expected, double actual) {
 	cout << "result : " << ((fabs(expected - actual) < 1e-6) ? "success," : "fail   ,")
 		<< " expected : " << setiosflags(ios::fixed) << setprecision(6) << expected << ",  actual : " << actual << endl;

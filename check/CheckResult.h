@@ -21,6 +21,8 @@ public:
 	void checkIntDoubleVector(vector<vector<int>>& expected, vector<vector<int>>& actual);
 	void checkUint(unsigned int expected, unsigned int actual);
 	void checkLongLong(long long expected, long long actual);
+	void checkLongLongVectorVector(vector<vector<long long>>& expected, vector<vector<long long>>& actual);
+	void checkLongLongVectorRandomOrderVector(vector<vector<long long>>& expected, vector<vector<long long>>& actual);
 	void checkDouble(double expected, double actual);
 	void checkDoubleVector(vector<double>& expected, vector<double>& actual);
 	void checkBool(bool expected, bool actual);
