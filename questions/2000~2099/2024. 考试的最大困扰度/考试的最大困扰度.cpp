@@ -54,7 +54,7 @@ public:
         return max(maxConsecutiveAnswers(answerKey, k + 1, 'T'), maxConsecutiveAnswers(answerKey, k + 1, 'F'));
     }
 
-    int maxConsecutiveAnswers(string answerKey, int window, char change) {
+    int maxConsecutiveAnswers(string& answerKey, int window, char change) {
         int left = -1, right = 0, size = answerKey.size(), count = 0, maxConsecutive = 0;
 
         for (right = 0; right < size; ++right) {
