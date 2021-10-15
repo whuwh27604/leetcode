@@ -52,7 +52,7 @@ public:
                 --right;
             }
 
-            plans += (right - left);
+            plans += ((long long)right - left);
             ++left;
         }
 
