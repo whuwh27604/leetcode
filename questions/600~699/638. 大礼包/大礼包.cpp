@@ -91,7 +91,7 @@ public:
         int key = 0;
 
         for (int need : needs) {
-            key = key * 10 + need;
+            key = key * 11 + need;
         }
 
         return key;
@@ -122,6 +122,11 @@ int main()
     special = { {1,1,0,4},{2,2,1,9} };
     needs = { 1,1,1 };
     check.checkInt(0, o.shoppingOffers(price, special, needs));
+
+    price = { 1,5 };
+    special = { {0,1,8},{1,0,9} };
+    needs = { 7,10 };
+    check.checkInt(57, o.shoppingOffers(price, special, needs));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
