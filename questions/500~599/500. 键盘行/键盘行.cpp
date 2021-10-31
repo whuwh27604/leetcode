@@ -31,50 +31,21 @@ using namespace std;
 class Solution {
 public:
     vector<string> findWords(vector<string>& words) {
-        vector<string> oneLineWords;
+        vector<string> ans;
+        vector<int> lines = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,2,1,2,2,2,1,2,2,2,3,3,1,1,1,1,2,1,1,3,1,3,1,3,0,0,0,0,0,0,2,3,3,2,1,2,2,2,1,2,2,2,3,3,1,1,1,1,2,1,1,3,1,3,1,3,0,0,0,0 };
 
-        for (unsigned int i = 0; i < words.size(); i++) {
-            string oneWord = words[i];
-            if (oneWord.empty()) {
-                oneLineWords.push_back(oneWord);
-                continue;
-            }
+        for (string& word : words) {
+            int i = 0, size = word.size(), line = lines[word[0]];
 
-            int wordValue = keyValue[oneWord[0]];
-            bool isOneLineWord = true;
-            for (unsigned int j = 1; j < oneWord.size(); j++) {
-                if (keyValue[oneWord[j]] != wordValue) {
-                    isOneLineWord = false;
-                    break;
-                }
-            }
+            for (i = 1; i < size && lines[word[i]] == line; ++i) {}
 
-            if (isOneLineWord) {
-                oneLineWords.push_back(oneWord);
+            if (i == size) {
+                ans.push_back(word);
             }
         }
 
-        return oneLineWords;
+        return ans;
     }
-
-    Solution() {
-        string oneLine = "qwertyuiopQWERTYUIOP";
-        for (unsigned int i = 0; i < oneLine.size(); i++) {
-            keyValue[oneLine[i]] = 1;
-        }
-
-        oneLine = "asdfghjklASDFGHJKL";
-        for (unsigned int i = 0; i < oneLine.size(); i++) {
-            keyValue[oneLine[i]] = 2;
-        }
-
-        oneLine = "zxcvbnmZXCVBNM";
-        for (unsigned int i = 0; i < oneLine.size(); i++) {
-            keyValue[oneLine[i]] = 3;
-        }
-    }
-
-    char keyValue[(int)'z' + 1];
 };
 
 int main()
@@ -90,11 +61,6 @@ int main()
     words = {  };
     actual = o.findWords(words);
     expected = {  };
-    check.checkStringVector(expected, actual);
-
-    words = { "" };
-    actual = o.findWords(words);
-    expected = { "" };
     check.checkStringVector(expected, actual);
 
     words = { "q","a","z" };
