@@ -44,39 +44,44 @@ using namespace std;
 class Solution {
 public:
     bool buddyStrings(string A, string B) {
-        // 有两种情况是亲密字符串：1、A==B，且至少一个字符出现2次；2、A、B只有两个地方不同，且A[i]==B[j] && [Aj]==B[i]
-        vector<int> diff;
-        int charTable[26] = { 0 };
-        bool charMoreThanOnce = false;
+        // 有两种情况是亲密字符串：1、A==B，且至少一个字符出现2次；2、A、B只有两个地方不同，且A[i]==B[j] && A[j]==B[i]
+        vector<bool> exist('z' + 1, false);
+        bool twice = false;
+        int i, sizeA = A.size(), sizeB = B.size(), diff = 0;
+        char diffA = 0, diffB = 0;
 
-        for (unsigned int i = 0; i < A.size(); i++) {
-            if (A[i] != B[i]) {
-                if (diff.size() >= 3) {
-                    return false;
-                }
-                diff.push_back(i);
-                continue;
-            }
-
-            if (charMoreThanOnce) {
-                continue;
-            }
-
-            charTable[A[i] - 'a']++;
-            if (charTable[A[i] - 'a'] >= 2) {
-                charMoreThanOnce = true;
-            }
-        }
-
-        if (diff.size() == 0) {
-            return charMoreThanOnce;
-        }
-
-        if (diff.size() == 1) {
+        if (sizeA != sizeB) {
             return false;
         }
 
-        return ((A[diff[0]] == B[diff[1]]) && (A[diff[1]] == B[diff[0]]));
+        for (i = 0; i < sizeA; ++i) {
+            if (exist[A[i]]) {
+                twice = true;
+            }
+            else {
+                exist[A[i]] = true;
+            }
+
+            if (A[i] == B[i]) {
+                continue;
+            }
+
+            if (diff == 0) {
+                diffA = A[i], diffB = B[i];
+            }
+            else if (diff == 1) {
+                if (diffA != B[i] || diffB != A[i]) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+
+            ++diff;
+        }
+
+        return (diff == 0 && twice) || (diff == 2);
     }
 };
 
@@ -85,45 +90,17 @@ int main()
     Solution o;
     CheckResult check;
 
-    string A = "ab";
-    string B = "ba";
-    check.checkBool(true, o.buddyStrings(A, B));
-
-    A = "a";
-    B = "b";
-    check.checkBool(false, o.buddyStrings(A, B));
-
-    A = "ab";
-    B = "ab";
-    check.checkBool(false, o.buddyStrings(A, B));
-
-    A = "aa";
-    B = "aa";
-    check.checkBool(true, o.buddyStrings(A, B));
-
-    A = "bcaad";
-    B = "bcaad";
-    check.checkBool(true, o.buddyStrings(A, B));
-
-    A = "aaaaaaabc";
-    B = "aaaaaaacb";
-    check.checkBool(true, o.buddyStrings(A, B));
-
-    A = "aaaaaaacc";
-    B = "aaaaaaacb";
-    check.checkBool(false, o.buddyStrings(A, B));
-
-    A = "";
-    B = "aa";
-    check.checkBool(false, o.buddyStrings(A, B));
-
-    A = "";
-    B = "";
-    check.checkBool(false, o.buddyStrings(A, B));
-
-    A = "abc";
-    B = "def";
-    check.checkBool(false, o.buddyStrings(A, B));
+    check.checkBool(true, o.buddyStrings("ab", "ba"));
+    check.checkBool(false, o.buddyStrings("a", "b"));
+    check.checkBool(false, o.buddyStrings("ab", "ab"));
+    check.checkBool(true, o.buddyStrings("aa", "aa"));
+    check.checkBool(true, o.buddyStrings("bcaad", "bcaad"));
+    check.checkBool(true, o.buddyStrings("aaaaaaabc", "aaaaaaacb"));
+    check.checkBool(false, o.buddyStrings("aaaaaaacc", "aaaaaaacb"));
+    check.checkBool(false, o.buddyStrings("", "aa"));
+    check.checkBool(false, o.buddyStrings("", ""));
+    check.checkBool(false, o.buddyStrings("abc", "def"));
+    check.checkBool(false, o.buddyStrings("ab", "babbb"));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
