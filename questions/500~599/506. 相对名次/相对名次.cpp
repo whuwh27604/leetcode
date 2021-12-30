@@ -20,7 +20,7 @@ N 是一个正整数并且不会超过 10000。
 */
 
 #include <iostream>
-#include <set>
+#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -28,38 +28,31 @@ using namespace std;
 class Solution {
 public:
     vector<string> findRelativeRanks(vector<int>& nums) {
-        int i, len = nums.size();
-        set<int> sortedNums;
-        vector<string> rank;
-        rank.reserve(len);
+        int i, size = nums.size();
+        vector<pair<int, int>> numIndices(size);
+        vector<string> ranks(size);
 
-        for (i = 0; i < len; i++) {
-            sortedNums.insert(nums[i]);
+        for (i = 0; i < size; ++i) {
+            numIndices[i] = { nums[i],i };
         }
 
-        for (i = 0; i < len; i++) {
-            auto iter = sortedNums.find(nums[i]);
-            int index = distance(iter, sortedNums.end());
-            switch (index) {
-                case 1:
-                    rank.push_back("Gold Medal");
-                    break;
+        sort(numIndices.begin(), numIndices.end());
 
-                case 2:
-                    rank.push_back("Silver Medal");
-                    break;
+        ranks[numIndices[size - 1].second] = "Gold Medal";
 
-                case 3:
-                    rank.push_back("Bronze Medal");
-                    break;
-
-                default:
-                    rank.push_back(to_string(index));
-                    break;
-            }
+        if (size > 1) {
+            ranks[numIndices[size - 2].second] = "Silver Medal";
         }
 
-        return rank;
+        if (size > 2) {
+            ranks[numIndices[size - 3].second] = "Bronze Medal";
+        }
+
+        for (i = size - 4; i >= 0; --i) {
+            ranks[numIndices[i].second] = to_string(size - i);
+        }
+
+        return ranks;
     }
 };
 
@@ -76,11 +69,6 @@ int main()
     nums = { 1,2,3,4,5 };
     actual = o.findRelativeRanks(nums);
     expected = { "5", "4", "Bronze Medal", "Silver Medal", "Gold Medal" };
-    check.checkStringVector(expected, actual);
-
-    nums = {  };
-    actual = o.findRelativeRanks(nums);
-    expected = {  };
     check.checkStringVector(expected, actual);
 
     nums = { 1 };
