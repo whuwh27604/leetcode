@@ -45,41 +45,29 @@ using namespace std;
 class Solution {
 public:
     vector<int> luckyNumbers(vector<vector<int>>& matrix) {
-        vector<int> allMinNums;
         int i, j, row = matrix.size(), column = matrix[0].size();
+        vector<int> rowMins(row), luckyNums;
 
-        for (i = 0; i < row; i++) {
-            int minimun = minNumInOneRow(matrix[i]);
-            allMinNums.push_back(minimun);
+        for (i = 0; i < row; ++i) {
+            rowMins[i] = *min_element(matrix[i].begin(), matrix[i].end());
         }
 
-        vector<int> ans;
-        for (j = 0; j < column; j++) {
-            int rowIndex, maximum = INT_MIN;
+        for (j = 0; j < column; ++j) {
+            int columnMax = 0, r = -1;
 
-            for (i = 0; i < row; i++) {
-                if (matrix[i][j] > maximum) {
-                    maximum = matrix[i][j];
-                    rowIndex = i;
+            for (i = 0; i < row; ++i) {
+                if (matrix[i][j] > columnMax) {
+                    columnMax = matrix[i][j];
+                    r = i;
                 }
             }
 
-            if (allMinNums[rowIndex] == maximum) {
-                ans.push_back(maximum);
+            if (rowMins[r] == columnMax) {
+                luckyNums.push_back(columnMax);
             }
         }
 
-        return ans;
-    }
-
-    int minNumInOneRow(vector<int>& row) {
-        int i, len = row.size(), minimum = INT_MAX;
-
-        for (i = 0; i < len; i++) {
-            minimum = min(minimum, row[i]);
-        }
-
-        return minimum;
+        return luckyNums;
     }
 };
 
