@@ -24,7 +24,6 @@
 */
 
 #include <iostream>
-#include <sstream>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -33,25 +32,13 @@ class Solution {
 public:
     string complexNumberMultiply(string a, string b) {
         int positon = a.find('+');
-        string a1String(a, 0, positon);
-        int a1 = getNumber(a1String);
-        string b1String(a, positon + 1, a.size() - positon - 2);
-        int b1 = getNumber(b1String);
+        int a1 = stoi(string(a, 0, positon));
+        int b1 = stoi(string(a, positon + 1, a.size() - positon - 2));
         positon = b.find('+');
-        string a2String(b, 0, positon);
-        int a2 = getNumber(a2String);
-        string b2String(b, positon + 1, b.size() - positon - 2);
-        int b2 = getNumber(b2String);
+        int a2 = stoi(string(b, 0, positon));
+        int b2 = stoi(string(b, positon + 1, b.size() - positon - 2));
 
         return to_string(a1 * a2 - b1 * b2) + "+" + to_string(a1 * b2 + a2 * b1) + "i";
-    }
-
-    int getNumber(string& s) {
-        stringstream ss;
-        ss << s;
-        int number;
-        ss >> number;
-        return number;
     }
 };
 
