@@ -24,23 +24,24 @@ using namespace std;
 class Solution {
 public:
     string convertToBase7(int num) {
+        if (num == 0) {
+            return "0";
+        }
+
         string base7Num;
 
-        if (num == 0) {
-            base7Num.insert(0, to_string(0));
-            return base7Num;
-        }
-
-        int absNum = abs(num);
-        while (absNum != 0) {
-            int remainder = (absNum % 7);
-            absNum /= 7;
-            base7Num.insert(0, to_string(remainder));
-        }
-
         if (num < 0) {
-            base7Num.insert(0, 1, '-');
+            num = -num;
+            base7Num.push_back('-');
         }
+
+        while (num != 0) {
+            base7Num.push_back('0' + (num % 7));
+            num /= 7;
+        }
+
+        auto iter = (base7Num[0] == '-' ? base7Num.begin() + 1 : base7Num.begin());
+        reverse(iter, base7Num.end());
 
         return base7Num;
     }
