@@ -38,42 +38,35 @@ using namespace std;
 class Solution {
 public:
     vector<string> findRestaurant(vector<string>& list1, vector<string>& list2) {
-        vector<string>* longList, * shortList;
         if (list1.size() > list2.size()) {
-            longList = &list1;
-            shortList = &list2;
-        }
-        else {
-            longList = &list2;
-            shortList = &list1;
+            return findRestaurant(list2, list1);
         }
 
-        unordered_map<string, unsigned int> nameIndex;
-        for (unsigned int i = 0; i < longList->size(); i++) {
-            nameIndex[(*longList)[i]] = i;
+        unordered_map<string, int> nameIndices;
+        int i, size1 = list1.size(), size2 = list2.size(), minIndexSum = INT_MAX;
+        vector<string> restaurants;
+
+        for (i = 0; i < size2; ++i) {
+            nameIndices[list2[i]] = i;
         }
 
-        unsigned int minIndexSum = INT_MAX;
-        vector<string> bothLikeRestaurant;
-        for (unsigned int j = 0; j < shortList->size(); j++) {
-            auto iter = nameIndex.find((*shortList)[j]);
-            if (iter == nameIndex.end()) {
+        for (i = 0; i < size1; ++i) {
+            if (nameIndices.count(list1[i]) == 0) {
                 continue;
             }
 
-            unsigned int indexSum = (iter->second + j);
-            if (indexSum > minIndexSum) {
-                continue;
-            }
+            int indexSum = (nameIndices[list1[i]] + i);
 
             if (indexSum < minIndexSum) {
                 minIndexSum = indexSum;
-                bothLikeRestaurant.clear();
+                restaurants = { list1[i] };
             }
-            bothLikeRestaurant.push_back((*shortList)[j]);
+            else if (indexSum == minIndexSum) {
+                restaurants.push_back(list1[i]);
+            }
         }
 
-        return bothLikeRestaurant;
+        return restaurants;
     }
 };
 
