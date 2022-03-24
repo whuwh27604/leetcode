@@ -33,118 +33,28 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> imageSmoother(vector<vector<int>>& M) {
-        vector<vector<int>> smoothMatrix(M.size(), vector<int>(M[0].size(), 0));
+        int i, r, c, row = M.size(), column = M[0].size();
+        int dr[8] = { 0,1,1,1,0,-1,-1,-1 }, dc[8] = { 1,1,0,-1,-1,-1,0,1 };
+        vector<vector<int>> smoothMatrix(row, vector<int>(column));
 
-        for (unsigned int i = 0; i < M.size(); i++) {
-            for (unsigned int j = 0; j < M[0].size(); j++) {
-                smoothMatrix[i][j] = calcAverage(i, j, M.size(), M[0].size(), M);
+        for (r = 0; r < row; ++r) {
+            for (c = 0; c < column; ++c) {
+                int sum = M[r][c], count = 1;
+
+                for (i = 0; i < 8; ++i) {
+                    int nr = r + dr[i], nc = c + dc[i];
+
+                    if (nr >= 0 && nr < row && nc >= 0 && nc < column) {
+                        sum += M[nr][nc];
+                        count += 1;
+                    }
+                }
+
+                smoothMatrix[r][c] = sum / count;
             }
         }
 
         return smoothMatrix;
-    }
-
-    int calcAverage(int i, int j, int height, int width, vector<vector<int>>& M) {
-        int sum = M[i][j], divisor = 1, isValid = 0;
-        sum += up(i, j, M, isValid);
-        divisor += isValid;
-        sum += upRight(i, j, width, M, isValid);
-        divisor += isValid;
-        sum += right(i, j, width, M, isValid);
-        divisor += isValid;
-        sum += downRight(i, j, height, width, M, isValid);
-        divisor += isValid;
-        sum += down(i, j, height, M, isValid);
-        divisor += isValid;
-        sum += downLeft(i, j, height, M, isValid);
-        divisor += isValid;
-        sum += left(i, j, M, isValid);
-        divisor += isValid;
-        sum += upLeft(i, j, M, isValid);
-        divisor += isValid;
-        return (sum / divisor);
-    }
-
-    int up(int i, int j, vector<vector<int>>& M, int& isValid) {
-        if (i == 0) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i - 1][j];
-    }
-
-    int upRight(int i, int j, int width, vector<vector<int>>& M, int& isValid) {
-        if ((i == 0) || (j == (width - 1))) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i - 1][j + 1];
-    }
-
-    int right(int i, int j, int width, vector<vector<int>>& M, int& isValid) {
-        if (j == (width - 1)) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i][j + 1];
-    }
-
-    int downRight(int i, int j, int height, int width, vector<vector<int>>& M, int& isValid) {
-        if ((i == (height - 1)) || (j == (width - 1))) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i + 1][j + 1];
-    }
-
-    int down(int i, int j, int height, vector<vector<int>>& M, int& isValid) {
-        if (i == (height - 1)) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i + 1][j];
-    }
-
-
-
-    int downLeft(int i, int j, int height, vector<vector<int>>& M, int& isValid) {
-        if ((i == (height - 1)) || (j == 0)) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i + 1][j - 1];
-    }
-
-    int left(int i, int j, vector<vector<int>>& M, int& isValid) {
-        if (j == 0) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i][j - 1];
-    }
-
-    int upLeft(int i, int j, vector<vector<int>>& M, int& isValid) {
-        if ((i == 0) || (j == 0)) {
-            isValid = 0;
-            return 0;
-        }
-
-        isValid = 1;
-        return M[i - 1][j - 1];
     }
 };
 
@@ -157,7 +67,7 @@ int main()
     vector<vector<int>> actual = o.imageSmoother(M);
     vector<vector<int>> expected = { {0,0,0},{0,0,0},{0,0,0} };
     check.checkIntDoubleVector(expected, actual);
-    
+
     M = { {1,1,1},{1,1,1},{1,1,1} };
     actual = o.imageSmoother(M);
     expected = { {1,1,1},{1,1,1},{1,1,1} };
