@@ -43,8 +43,6 @@
 */
 
 #include <iostream>
-#include <sstream>
-#include <stack>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -52,54 +50,29 @@ using namespace std;
 class Solution {
 public:
     int calPoints(vector<string>& ops) {
-        stack<int> pointsStack;
-        for (unsigned int i = 0; i < ops.size(); i++) {
-            string operation = ops[i];
-            if (operation == "+") {
-                processAdd(pointsStack);
+        vector<int> points;
+        int sum = 0;
+
+        for (string& s : ops) {
+            if (s == "+") {
+                points.push_back(points[points.size() - 1] + points[points.size() - 2]);
             }
-            else if (operation == "D") {
-                processDouble(pointsStack);
+            else if (s == "D") {
+                points.push_back(points.back() * 2);
             }
-            else if (operation == "C") {
-                processCancel(pointsStack);
+            else if (s == "C") {
+                points.pop_back();
             }
             else {
-                processPoint(operation, pointsStack);
+                points.push_back(stoi(s));
             }
         }
 
-        int sum = 0;
-        while (!pointsStack.empty()) {
-            sum += pointsStack.top();
-            pointsStack.pop();
+        for (int point : points) {
+            sum += point;
         }
+
         return sum;
-    }
-
-    void processAdd(stack<int>& pointsStack) {
-        int points = pointsStack.top();
-        pointsStack.pop();
-        int currentPoints = (points + pointsStack.top());
-        pointsStack.push(points);
-        pointsStack.push(currentPoints);
-    }
-
-    void processDouble(stack<int>& pointsStack) {
-        int points = pointsStack.top();
-        pointsStack.push(points * 2);
-    }
-
-    void processCancel(stack<int>& pointsStack) {
-        pointsStack.pop();
-    }
-
-    void processPoint(string& operation, stack<int>& pointsStack) {
-        stringstream ss;
-        ss << operation;
-        int points;
-        ss >> points;
-        pointsStack.push(points);
     }
 };
 
