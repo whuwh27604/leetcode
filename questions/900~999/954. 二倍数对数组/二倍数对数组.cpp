@@ -42,62 +42,51 @@ using namespace std;
 class Solution {
 public:
     bool canReorderDoubled(vector<int>& A) {
-        map<int, int> positive, negative;
+        map<int, int> positive;
+        map<int, int, greater<int>> negative;
+
         partition(A, positive, negative);
 
         return checkPositive(positive) && checkNegative(negative);
     }
 
-    void partition(vector<int>& A, map<int, int>& positive, map<int, int>& negative) {
+    void partition(vector<int>& A, map<int, int>& positive, map<int, int, greater<int>>& negative) {
         for (int num : A) {
-            if (num >= 0) {
-                if (positive.count(num) == 0) {
-                    positive[num] = 1;
-                }
-                else {
-                    ++positive[num];
-                }
-            }
-            else {
-                if (negative.count(num) == 0) {
-                    negative[num] = 1;
-                }
-                else {
-                    ++negative[num];
-                }
-            }
+            num >= 0 ? ++positive[num] : ++negative[num];
         }
     }
 
     bool checkPositive(map<int, int>& positive) {
-        for (auto iter = positive.begin(); iter != positive.end(); ++iter) {
-            if (iter->second == 0) {
+        for (auto& numCount : positive) {
+            if (numCount.second == 0) {
                 continue;
             }
 
-            int doubled = iter->first * 2;
-            if (positive.count(doubled) == 0 || positive[doubled] < iter->second) {
+            int doubled = numCount.first * 2;
+
+            if (positive.count(doubled) == 0 || positive[doubled] < numCount.second) {
                 return false;
             }
 
-            positive[doubled] -= iter->second;
+            positive[doubled] -= numCount.second;
         }
 
         return true;
     }
 
-    bool checkNegative(map<int, int>& negative) {
-        for (auto iter = negative.rbegin(); iter != negative.rend(); ++iter) {
-            if (iter->second == 0) {
+    bool checkNegative(map<int, int, greater<int>>& negative) {
+        for (auto& numCount : negative) {
+            if (numCount.second == 0) {
                 continue;
             }
 
-            int doubled = iter->first * 2;
-            if (negative.count(doubled) == 0 || negative[doubled] < iter->second) {
+            int doubled = numCount.first * 2;
+
+            if (negative.count(doubled) == 0 || negative[doubled] < numCount.second) {
                 return false;
             }
 
-            negative[doubled] -= iter->second;
+            negative[doubled] -= numCount.second;
         }
 
         return true;
