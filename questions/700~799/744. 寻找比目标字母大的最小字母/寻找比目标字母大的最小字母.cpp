@@ -58,32 +58,26 @@ using namespace std;
 class Solution {
 public:
     char nextGreatestLetter(vector<char>& letters, char target) {
-        int len = letters.size();
-        if ((target < letters[0]) || (target >= letters[len - 1])) {
+        int size = letters.size(), left = 0, right = size - 1;
+        char ans = 0;
+
+        if ((target < letters[0]) || (target >= letters[size - 1])) {
             return letters[0];
         }
 
-        return binarySearch(letters, target, 0, len - 1);
-    }
+        while (left <= right) {
+            int middle = (left + right) / 2;
 
-    char binarySearch(vector<char>& letters, char target, int left, int right) {
-        int middle = (left + right) / 2;
-        if (middle == left) {
             if (letters[middle] > target) {
-                return letters[middle];
+                ans = letters[middle];
+                right = middle - 1;
             }
-            return letters[right];
+            else {
+                left = middle + 1;
+            }
         }
 
-        if ((letters[middle] > target) && (letters[middle - 1] <= target)) {
-            return letters[middle];
-        }
-
-        if (letters[middle] <= target) {
-            return binarySearch(letters, target, middle + 1, right);
-        }
-
-        return binarySearch(letters, target, left, middle - 1);
+        return ans;
     }
 };
 
