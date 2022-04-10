@@ -44,13 +44,13 @@ public:
         string morseTable[26] = { ".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.." };
         unordered_set<string> morseWords;
 
-        for (unsigned int i = 0; i < words.size(); i++) {
-            string oneWord = words[i];
+        for (string& word : words) {
             string morse;
 
-            for (unsigned int j = 0; j < oneWord.size(); j++) {
-                morse += morseTable[oneWord[j] - 'a'];
+            for (char c : word) {
+                morse += morseTable[c - 'a'];
             }
+
             morseWords.insert(morse);
         }
 
