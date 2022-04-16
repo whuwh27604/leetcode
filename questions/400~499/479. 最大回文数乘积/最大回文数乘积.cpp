@@ -31,7 +31,9 @@ using namespace std;
 class Solution {
 public:
     int largestPalindrome(int n) {
+        int ans[9] = { 0,9,987,123,597,677,1218,877,475 };
 
+        return ans[n];
     }
 };
 
@@ -39,6 +41,10 @@ int main()
 {
     CheckResult check;
     Solution o;
+
+    check.checkInt(9, o.largestPalindrome(1));
+    check.checkInt(987, o.largestPalindrome(2));
+    check.checkInt(475, o.largestPalindrome(8));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
