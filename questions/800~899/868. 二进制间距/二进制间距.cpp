@@ -54,28 +54,19 @@ using namespace std;
 class Solution {
 public:
     int binaryGap(int N) {
-        int countOne = 0, consecutiveZeros = 0, maxConsecutiveZeros = 0;
+        int index = 0, bit1 = 1000000000, maxGap = 0;
 
         while (N != 0) {
-            int oneOrZero = (N % 2);
-            if (oneOrZero == 1) {
-                countOne++;
-                maxConsecutiveZeros = max(maxConsecutiveZeros, consecutiveZeros);
-                consecutiveZeros = 0;
-            }
-            else {
-                if (countOne != 0) {
-                    consecutiveZeros++;
-                }
+            if ((N & 1) == 1) {
+                maxGap = max(maxGap, index - bit1);
+                bit1 = index;
             }
 
-            N /= 2;
+            N >>= 1;
+            index++;
         }
 
-        if (countOne == 1) {
-            return 0;
-        }
-        return (maxConsecutiveZeros + 1);
+        return maxGap;
     }
 };
 
