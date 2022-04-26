@@ -37,8 +37,7 @@ m 和 n 都小于150
 */
 
 #include <iostream>
-#include <unordered_set>
-#include <stack>
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -46,64 +45,62 @@ using namespace std;
 class Solution {
 public:
     vector<vector<int>> pacificAtlantic(vector<vector<int>>& matrix) {
-        if (matrix.empty() || matrix[0].empty()) {
-            return {};
-        }
-
-        unordered_set<long long> fromPacific2Atlantic, fromAtlantic2Pacific;
         int i, j, row = matrix.size(), column = matrix[0].size();
+        vector<vector<bool>> reachPacific(row, vector<bool>(column, false)), reachAtlantic(row, vector<bool>(column, false));
+        vector<vector<int>> bothReach;
+        queue<int> q;
 
-        for (i = 0; i < row; i++) {
-            DFS(matrix, { i, 0 }, fromPacific2Atlantic);
-            DFS(matrix, { i, column - 1 }, fromAtlantic2Pacific);
+        for (j = 0; j < column; ++j) {
+            q.push(j);
+            reachPacific[0][j] = true;
         }
 
-        for (j = 0; j < column; j++) {
-            DFS(matrix, { 0, j }, fromPacific2Atlantic);
-            DFS(matrix, { row - 1, j }, fromAtlantic2Pacific);
+        for (i = 1; i < row; ++i) {
+            q.push((i << 16));
+            reachPacific[i][0] = true;
         }
 
-        vector<vector<int>> bothReachingPoints;
-        for (long long point : fromPacific2Atlantic) {
-            if (fromAtlantic2Pacific.find(point) != fromAtlantic2Pacific.end()) {
-                bothReachingPoints.push_back({ (int)(point >> 32), (int)point });
+        BFS(matrix, q, reachPacific);
+
+        for (j = 0; j < column; ++j) {
+            q.push(((row - 1) << 16) | j);
+            reachAtlantic[row - 1][j] = true;
+        }
+
+        for (i = 0; i < row - 1; ++i) {
+            q.push((i << 16) | (column - 1));
+            reachAtlantic[i][column - 1] = true;
+        }
+
+        BFS(matrix, q, reachAtlantic);
+
+        for (i = 0; i < row; ++i) {
+            for (j = 0; j < column; ++j) {
+                if (reachPacific[i][j] && reachAtlantic[i][j]) {
+                    bothReach.push_back({ i,j });
+                }
             }
         }
 
-        return bothReachingPoints;
+        return bothReach;
     }
 
-    void DFS(vector<vector<int>>& matrix, pair<int, int> originalPoint, unordered_set<long long>& reachablePoint) {
-        int dr[5] = { 0,1,0,-1,0 }, dc[5] = { 0,0,1,0,-1 };
+    void BFS(vector<vector<int>>& matrix, queue<int>& q, vector<vector<bool>>& reachable) {
         int row = matrix.size(), column = matrix[0].size();
-        stack<pair<pair<int, int>, int>> reachedPoint;
-        reachedPoint.push({ originalPoint, 0 });
-        reachablePoint.insert(((long long)(originalPoint.first) << 32) + originalPoint.second);
+        int dr[4] = { 0,1,0,-1 }, dc[4] = { 1,0,-1,0 };
 
-        while (!reachedPoint.empty()) {
-            pair<int, int> currentPoint = reachedPoint.top().first;
-            int direction = reachedPoint.top().second + 1;
-            reachedPoint.pop();
+        while (!q.empty()) {
+            int r = q.front() >> 16, c = q.front() & 0xffff;
+            q.pop();
 
-            for (; direction < 5; direction++) {
-                pair<int, int> nextPoint = { currentPoint.first + dr[direction],currentPoint.second + dc[direction] };
-                if ((nextPoint.first < 0) || (nextPoint.first >= row) || (nextPoint.second < 0) || (nextPoint.second >= column)) {
-                    continue;
-                }
+            for (int i = 0; i < 4; ++i) {
+                int nr = r + dr[i], nc = c + dc[i];
 
-                if (reachablePoint.find(((long long)(nextPoint.first) << 32) + nextPoint.second) != reachablePoint.end()) {
-                    continue;  // 如果这个点从其他路径已经访问过了，跳过
-                }
-
-                if (matrix[currentPoint.first][currentPoint.second] <= matrix[nextPoint.first][nextPoint.second]) {
-                    reachedPoint.push({ currentPoint, direction });
-                    reachablePoint.insert(((long long)(currentPoint.first) << 32) + currentPoint.second);
-                    currentPoint = nextPoint;
-                    direction = 0;
+                if (nr >= 0 && nr < row && nc >= 0 && nc < column && !reachable[nr][nc] && matrix[nr][nc] >= matrix[r][c]) {
+                    reachable[nr][nc] = true;
+                    q.push((nr << 16) | nc);
                 }
             }
-
-            reachablePoint.insert(((long long)(currentPoint.first) << 32) + currentPoint.second);
         }
     }
 };
@@ -113,45 +110,35 @@ int main()
     Solution o;
     CheckResult check;
 
-    vector<vector<int>> matrix = {};
+    vector<vector<int>> matrix = { {1,2,3} };
     vector<vector<int>> actual = o.pacificAtlantic(matrix);
-    vector<vector<int>> expected = {};
-    check.checkIntVectorVectorRandomOrder(expected, actual);
-
-    matrix = { {} };
-    actual = o.pacificAtlantic(matrix);
-    expected = {};
-    check.checkIntVectorVectorRandomOrder(expected, actual);
-
-    matrix = { {1,2,3} };
-    actual = o.pacificAtlantic(matrix);
-    expected = { {0,0},{0,1},{0,2} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    vector<vector<int>> expected = { {0,0},{0,1},{0,2} };
+    check.checkIntVectorRandomOrderVector(expected, actual);
 
     matrix = { {1,2,3},{2,3,2},{3,2,1} };
     actual = o.pacificAtlantic(matrix);
     expected = { {0,2},{2,0},{1,1} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    check.checkIntVectorRandomOrderVector(expected, actual);
 
     matrix = { {1,2,2,3,5},{3,2,3,4,4},{2,4,5,3,1},{6,7,1,4,5},{5,1,1,2,4} };
     actual = o.pacificAtlantic(matrix);
     expected = { {1,3},{3,1},{2,2},{4,0},{0,4},{1,4},{3,0} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    check.checkIntVectorRandomOrderVector(expected, actual);
 
     matrix = { {1,2,3},{8,9,4},{7,6,5} };
     actual = o.pacificAtlantic(matrix);
     expected = { {2,2},{1,1},{1,0},{0,2},{2,0},{1,2},{2,1} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    check.checkIntVectorRandomOrderVector(expected, actual);
 
     matrix = { {10,10,10},{10,1,10},{10,10,10} };
     actual = o.pacificAtlantic(matrix);
     expected = { {0,0},{0,1},{0,2},{1,0},{1,2},{2,0},{2,1},{2,2} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    check.checkIntVectorRandomOrderVector(expected, actual);
 
     matrix = { {10,1,1},{10,10,10},{10,10,10} };
     actual = o.pacificAtlantic(matrix);
     expected = { {0,0},{0,1},{0,2},{1,0},{1,1},{1,2},{2,0},{2,1},{2,2} };
-    check.checkIntVectorVectorRandomOrder(expected, actual);
+    check.checkIntVectorRandomOrderVector(expected, actual);
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
