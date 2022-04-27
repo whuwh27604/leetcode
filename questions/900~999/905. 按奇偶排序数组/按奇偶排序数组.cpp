@@ -30,40 +30,18 @@ using namespace std;
 class Solution {
 public:
     vector<int> sortArrayByParity(vector<int>& A) {
-        int headIndex = -1, len = A.size(), tailIndex = len;
+        int size = A.size(), i = 0, j = size - 1;
 
-        while (1) {
-            nextOddNumber(A, headIndex, len);
-            prevEvenNumber(A, tailIndex);
+        while (i < j) {
+            for (; i < j && (A[i] & 1) == 0; ++i) {};
+            for (; i < j && (A[j] & 1) == 1; --j) {};
 
-            if (headIndex > tailIndex) {
-                break;
+            if (i < j) {
+                swap(A[i], A[j]);
             }
-
-            swap(A[headIndex], A[tailIndex]);
         }
 
         return A;
-    }
-
-    void nextOddNumber(vector<int>& A, int& headIndex, int len) {
-        headIndex++;
-        while ((A[headIndex] % 2) == 0) {
-            headIndex++;
-            if (headIndex == len) {
-                break;
-            }
-        }
-    }
-
-    void prevEvenNumber(vector<int>& A, int& TailIndex) {
-        TailIndex--;
-        while ((A[TailIndex] % 2) == 1) {
-            TailIndex--;
-            if (TailIndex == -1) {
-                break;
-            }
-        }
     }
 };
 
@@ -76,7 +54,7 @@ int main()
     vector<int> actual = o.sortArrayByParity(A);
     vector<int> expected = { 4,2,1,3 };
     check.checkIntVector(expected, actual);
-    
+
     A = { 3 };
     actual = o.sortArrayByParity(A);
     expected = { 3 };
