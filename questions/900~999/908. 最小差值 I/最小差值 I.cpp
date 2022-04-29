@@ -36,6 +36,7 @@
 */
 
 #include <iostream>
+#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -43,20 +44,7 @@ using namespace std;
 class Solution {
 public:
     int smallestRangeI(vector<int>& A, int K) {
-        int maxA = INT_MIN, minA = INT_MAX;
-
-        for (unsigned int i = 0; i < A.size(); i++) {
-            int n = A[i];
-            if (n > maxA) {
-                maxA = n;
-            }
-            if (n < minA) {
-                minA = n;
-            }
-        }
-
-        int ans = ((maxA - minA) - (2 * K));
-        return (ans > 0) ? ans : 0;
+        return max(0, (*max_element(A.begin(), A.end()) - *min_element(A.begin(), A.end())) - (2 * K));
     }
 };
 
@@ -67,7 +55,7 @@ int main()
 
     vector<int> A = { 1 };
     check.checkInt(0, o.smallestRangeI(A, 0));
-    
+
     A = { 0,10 };
     check.checkInt(6, o.smallestRangeI(A, 2));
 
