@@ -31,56 +31,53 @@ logs[i] 保证有一个标识符，并且标识符后面有一个字。
 */
 
 #include <iostream>
-#include <map>
+#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
 
+bool pairCompare(const pair<string, string>& p1, const pair<string, string>& p2) {
+    return p1.second == p2.second ? p1.first < p2.first : p1.second < p2.second;
+}
+
 class Solution {
 public:
     vector<string> reorderLogFiles(vector<string>& logs) {
-        multimap<string, string> letterWords;
-        vector<string> digitWords;
+        vector<pair<string, string>> letterLogs;
+        vector<string> digitLogs;
+        vector<string> ans;
+        string identifier, words;
 
-        for (unsigned int i = 0; i < logs.size(); i++) {
-            string word = logs[i];
-            string pureLetter, identifier;
-            if (lettersOrDigits(word, identifier, pureLetter) == LETTERS) {
-                string key = pureLetter + identifier;
-                letterWords.insert(pair<string, string>(key, word));
+        for (string& log : logs) {
+            if (lettersOrDigits(log, identifier, words) == LETTERS) {
+                letterLogs.push_back({ identifier, words });
             }
             else {
-                digitWords.push_back(word);
+                digitLogs.push_back(log);
             }
         }
 
-        vector<string> ans;
-        for (auto iter = letterWords.begin(); iter != letterWords.end(); iter++) {
-            ans.push_back(iter->second);
+        sort(letterLogs.begin(), letterLogs.end(), pairCompare);
+
+        for (auto& log : letterLogs) {
+            ans.push_back(log.first + " " + log.second);
         }
-        ans.insert(ans.end(), digitWords.begin(), digitWords.end());
+
+        ans.insert(ans.end(), digitLogs.begin(), digitLogs.end());
 
         return ans;
     }
 
-    int lettersOrDigits(string& word, string& identifier, string& pureLetter) {
-        int i = 0;
-        while (word[i] == ' ') {
-            i++;
-        }
-        int start = i;
-        while (word[i] != ' ') {
-            i++;
-        }
-        identifier = word.substr(start, i - start + 1);
+    int lettersOrDigits(string& log, string& identifier, string& words) {
+        int index = log.find(' ');
 
-        i++;
-        if (word[i] <= '9') {
+        if (log[index + 1] <= '9') {
             return DIGITS;
         }
 
-        pureLetter = word;
-        pureLetter.erase(0, i);
+        identifier = log.substr(0, index);
+        words = log.substr(index + 1, log.size() - index - 1);
+
         return LETTERS;
     }
 
@@ -121,6 +118,11 @@ int main()
     logs = { "a act","a act" };
     actual = o.reorderLogFiles(logs);
     expected = { "a act","a act" };
+    check.checkStringVector(expected, actual);
+
+    logs = { "dig1 8 1 5 1","let1 art zero can","dig2 3 6","let2 own kit dig","let3 art zero" };
+    actual = o.reorderLogFiles(logs);
+    expected = { "let3 art zero","let1 art zero can","let2 own kit dig","dig1 8 1 5 1","dig2 3 6" };
     check.checkStringVector(expected, actual);
 }
 
