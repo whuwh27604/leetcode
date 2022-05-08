@@ -39,21 +39,20 @@ using namespace std;
 class Solution {
 public:
     vector<int> diStringMatch(string S) {
-        int len = S.size();
-        vector<int> ans;
-        ans.reserve(len + 1);
-        int minLeft = 0, maxLeft = len;
+        int i = 0, size = S.size(), minLeft = 0, maxLeft = size;
+        vector<int> ans(size + 1);
 
-        for (int i = 0; i < len; i++) {
-            if (S[i] == 'I') {
-                ans.push_back(minLeft++);
+        for (char c : S) {
+            if (c == 'I') {
+                ans[i++] = minLeft++;
             }
             else {
-                ans.push_back(maxLeft--);
+                ans[i++] = maxLeft--;
             }
         }
 
-        ans.push_back(maxLeft);
+        ans[i] = maxLeft;
+
         return ans;
     }
 };
