@@ -30,7 +30,7 @@ order.length == 26
 在 words[i] 和 order 中的所有字符都是英文小写字母。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/verifying-an-alien-dictionary
+链接：https://leetcode.cn/problems/verifying-an-alien-dictionary
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 
@@ -45,12 +45,13 @@ class Solution {
 public:
     bool isAlienSorted(vector<string>& words, string order) {
         unordered_map<char, int> char2Number;
-        for (int i = 0; i < 26; i++) {
+
+        for (int i = 0; i < 26; ++i) {
             char2Number[order[i]] = i;
         }
 
-        for (unsigned int j = 1; j < words.size(); j++) {
-            if (compareWords(words[j - 1], words[j], char2Number) == 1) {
+        for (int j = 1; j < (int)words.size(); ++j) {
+            if (!isLessEqual(words[j - 1], words[j], char2Number)) {
                 return false;
             }
         }
@@ -58,35 +59,26 @@ public:
         return true;
     }
 
-    int compareWords(string& word1, string& word2, unordered_map<char, int>& char2Number) {
-        int len1 = word1.size(), len2 = word2.size();
-        int minLen = min(len1, len2);
+    bool isLessEqual(string& word1, string& word2, unordered_map<char, int>& char2Number) {
+        int len1 = word1.size(), len2 = word2.size(), minLen = min(len1, len2);
 
-        for (int i = 0; i < minLen; i++) {
+        for (int i = 0; i < minLen; ++i) {
             if (char2Number[word1[i]] < char2Number[word2[i]]) {
-                return -1;
+                return true;
             }
             else if (char2Number[word1[i]] > char2Number[word2[i]]) {
-                return 1;
+                return false;
             }
         }
 
-        if (len1 < len2) {
-            return -1;
-        }
-        else if (len1 > len2) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        return len1 <= len2;
     }
 };
 
 int main()
 {
-    Solution o;
     CheckResult check;
+    Solution o;
 
     vector<string> words = { "hello","leetcode" };
     string order = "hlabcdefgijkmnopqrstuvwxyz";
