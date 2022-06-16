@@ -37,40 +37,29 @@ using namespace std;
 class Solution {
 public:
     void duplicateZeros(vector<int>& arr) {
-        int i, countNums = 0, countZeros = 0, len = arr.size(), index = len - 1;
-        bool lastZeroDuplicate = false;
+        int i, j = 0, size = arr.size();
 
-        for (i = 0; i < len; i++) {
-            countNums++;
-            if (countNums == len) {
-                lastZeroDuplicate = false;
-                break;
-            }
-
-            if (arr[i] != 0) {
-                continue;
-            }
-
-            countZeros++;
-            countNums++;
-            if (countNums == len) {
-                lastZeroDuplicate = true;
-                break;
-            }
+        for (i = 0; i < size && j < size; ++i) {
+            j += (arr[i] == 0 ? 2 : 1);
         }
 
-        if ((arr[i] == 0) && (!lastZeroDuplicate)) {
-            arr[index--] = arr[i--];
+        if (arr[--i] == 0 && j == size + 1) {
+            arr[size - 1] = 0;
+            --i;
+            j = size - 2;
+        }
+        else {
+            --j;
         }
 
-        while ((i >= 0) && (countZeros != 0)) {
-            arr[index--] = arr[i];
+        for (; i >= 0; --i) {
             if (arr[i] == 0) {
-                arr[index--] = 0;
-                countZeros--;
+                arr[j--] = 0;
+                arr[j--] = 0;
             }
-
-            i--;
+            else {
+                arr[j--] = arr[i];
+            }
         }
     }
 };
