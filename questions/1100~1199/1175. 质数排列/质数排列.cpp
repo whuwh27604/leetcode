@@ -23,7 +23,7 @@
 1 <= n <= 100
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/prime-arrangements
+链接：https://leetcode.cn/problems/prime-arrangements
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 
@@ -35,66 +35,51 @@ using namespace std;
 class Solution {
 public:
     int numPrimeArrangements(int n) {
-        // 假设质数有m个，就是求P(m,m)*P(n-m,n-m)
-        int numPrimes = countPrimes(n + 1);
-        int numComposites = n - numPrimes;
+        int primes = countPrimes(n);
 
-        // P(n,m)=n(n-1)...(n-m-1)=n!/(n-m)!, n=m, P(n,n)=n!
-        long long permutationPrimes = 1;
-        for (int i = 2; i <= numPrimes; i++) {
-            permutationPrimes = multi(permutationPrimes, i);
-        }
-        
-        long long permutationComposites = 1;
-        for (int i = 2; i <= numComposites; i++) {
-            permutationComposites = multi(permutationComposites, i);
-        }
-
-        long long ans = multi(permutationPrimes, permutationComposites);
-        return (int)ans;
+        return (int)(permutation(primes) * permutation(n - primes) % 1000000007);
     }
-
-    long long multi(long long a, long long b) {
-        long long c = a * b;
-        if (c >= 1000000007) {
-            c %= 1000000007;
-        }
-        return c;
-    }
-
-    int countPrimes(int n) {
-        // 埃拉托色尼筛选法
-        unsigned char* primes = new unsigned char[n];
-        memset(primes, 1, n);  // 全部置1
-        for (int i = 2; (i * i) < n; i++) {  // 如果n=i*i，则n不是质数，所以只需要循环到(i * i) < n就可以了
-            if (primes[i] == 0) {
-                continue;
-            }
-
-            for (int j = (i * i); j < n; j += i) {  // i的小于i的倍数都已经排除过了，现在只需要排除更大的i的倍数
-                primes[j] = 0;
-            }
-        }
-
+    
+    int countPrimes(int n) {  // 埃拉托色尼筛选法
+        vector<int> primes(n + 1, 1);
         int count = 0;
-        for (int k = 2; k < n; k++) {
+
+        for (int i = 2; (i * i) <= n; ++i) {
+            if (primes[i] != 0) {
+                for (int j = (i * i); j <= n; j += i) {
+                    primes[j] = 0;
+                }
+            }
+        }
+
+        for (int k = 2; k <= n; ++k) {
             count += primes[k];
         }
+
         return count;
+    }
+
+    long long permutation(int n) {
+        long long ans = 1;
+
+        for (int i = 2; i <= n; ++i) {
+            ans = (ans * i % 1000000007);
+        }
+
+        return ans;
     }
 };
 
 int main()
 {
-    Solution o;
     CheckResult check;
+    Solution o;
 
     check.checkInt(12, o.numPrimeArrangements(5));
-    check.checkInt(682289015, o.numPrimeArrangements(100));
-    check.checkInt(1, o.numPrimeArrangements(1));
     check.checkInt(1, o.numPrimeArrangements(2));
-    check.checkInt(2, o.numPrimeArrangements(3));
-    check.checkInt(4, o.numPrimeArrangements(4));
+    check.checkInt(1, o.numPrimeArrangements(1));
+    check.checkInt(682289015, o.numPrimeArrangements(100));
+    check.checkInt(289151874, o.numPrimeArrangements(17));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
