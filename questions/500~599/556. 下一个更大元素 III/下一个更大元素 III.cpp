@@ -26,36 +26,29 @@ class Solution {
 public:
     int nextGreaterElement(int n) {
         string s = to_string(n);
-        int size = s.size(), decreasingI, decreasingJ;
-
-        for (decreasingI = size - 2; decreasingI >= 0; decreasingI--) {
-            if (s[decreasingI] < s[decreasingI + 1]) {  // 找到从右到左第一个降序
-                break;
-            }
-        }
-
-        if (decreasingI < 0) {
+        int size = s.size(), i, j;
+        
+        // 找到从右到左第一个降序
+        for (i = size - 2; i >= 0 && s[i] >= s[i + 1]; --i) {}
+        if (i < 0) {
             return -1;
         }
 
-        decreasingJ = decreasingI + 1;
-        for (int i = decreasingI + 2; i < size; i++) {  // 找到比s[decreasingI]大的最小的数
-            if (s[i] <= s[decreasingI]) {
+        j = i + 1;
+
+        for (int k = i + 2; k < size; ++k) {  // 找到比s[decreasingI]大的最小的数
+            if (s[k] <= s[i]) {
                 continue;
             }
 
-            if (s[i] < s[decreasingJ]) {
-                decreasingJ = i;
+            if (s[k] < s[j]) {
+                j = k;
             }
         }
 
-        swap(s[decreasingI], s[decreasingJ]);
-        sort(s.begin() + decreasingI + 1, s.end());
-
-        stringstream ss;
-        ss << s;
-        long long greaterNum;
-        ss >> greaterNum;
+        swap(s[i], s[j]);
+        sort(s.begin() + i + 1, s.end());
+        long long greaterNum = stoll(s);
 
         return (greaterNum > INT_MAX) ? -1 : (int)greaterNum;
     }
