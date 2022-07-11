@@ -48,29 +48,26 @@ using namespace std;
 class Solution {
 public:
     int oddCells(int n, int m, vector<vector<int>>& indices) {
-        int i, len = indices.size(), sumOddRows = 0, sumOddColumns = 0;
-        int *rowIndex = new int[n](), * columnIndex = new int[m]();
+        int sumOddRows = 0, sumOddColumns = 0;
+        vector<int> rowIndex(n, 0), columnIndex(m, 0);
 
 
-        for (i = 0; i < len; i++) {
-            rowIndex[indices[i][0]]++;
-            columnIndex[indices[i][1]]++;
+        for (auto& index : indices) {
+            ++rowIndex[index[0]];
+            ++columnIndex[index[1]];
         }
 
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; ++i) {
             if ((rowIndex[i] % 2) == 1) {
-                sumOddRows++;
+                ++sumOddRows;
             }
         }
 
-        for (i = 0; i < m; i++) {
+        for (int i = 0; i < m; ++i) {
             if ((columnIndex[i] % 2) == 1) {
-                sumOddColumns++;
+                ++sumOddColumns;
             }
         }
-
-        delete[] rowIndex;
-        delete[] columnIndex;
 
         return (sumOddRows * m + sumOddColumns * n - sumOddRows * sumOddColumns * 2);
     }
