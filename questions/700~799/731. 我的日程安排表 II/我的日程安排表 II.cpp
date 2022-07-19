@@ -34,16 +34,28 @@ MyCalendar.book(25, 55); // returns true
 调用函数 MyCalendar.book(start, end)时， start 和 end 的取值范围为 [0, 10^9]。
 
 来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/my-calendar-ii
+链接：https://leetcode.cn/problems/my-calendar-ii
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 
 #include <iostream>
-#include <list>
+#include <set>
 #include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
+
+class Calendar {
+public:
+    int start;
+    int end;
+
+    Calendar(int s, int e) : start(s), end(e) {}
+
+    bool operator<(const Calendar& c) const {
+        return start == c.start ? end < c.end : start < c.start;
+    }
+};
 
 class MyCalendarTwo {
 public:
@@ -52,26 +64,38 @@ public:
     }
 
     bool book(int start, int end) {
-        for (pair<int, int>& overlap : overlaps) {
-            if ((start < overlap.second) && (end > overlap.first)) {
-                return false;  // 和已经安排了两个事件的时间段冲突，返回失败
-            }
+        if (isTripleBooking(start, end)) {
+            return false;
         }
 
-        for (pair<int, int>& event : events) {
-            if ((start < event.second) && (end > event.first)) {
-                overlaps.push_back({ max(start, event.first), min(end, event.second) });  // 添加冲突的时间段
-            }
-        }
-
-        events.push_back({ start, end });
+        booking(start, end);
 
         return true;
     }
 
+    bool isTripleBooking(int start, int end) {
+        for (auto iter = overlaps.begin(); iter != overlaps.end() && iter->start < end; ++iter) {
+            if (iter->start < end && iter->end > start) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void booking(int start, int end) {
+        for (auto iter = calendars.begin(); iter != calendars.end() && iter->start < end; ++iter) {
+            if (iter->start < end && iter->end > start) {
+                overlaps.insert(Calendar(max(start, iter->start), min(end, iter->end)));
+            }
+        }
+
+        calendars.insert(Calendar(start, end));
+    }
+
 private:
-    list<pair<int, int>> events;
-    list<pair<int, int>> overlaps;
+    set<Calendar> calendars;
+    set<Calendar> overlaps;
 };
 
 int main()
@@ -85,6 +109,18 @@ int main()
     check.checkBool(false, o1.book(5, 15));
     check.checkBool(true, o1.book(5, 10));
     check.checkBool(true, o1.book(25, 55));
+
+    MyCalendarTwo o2;
+    check.checkBool(true, o2.book(26, 35));
+    check.checkBool(true, o2.book(26, 32));
+    check.checkBool(false, o2.book(25, 32));
+    check.checkBool(true, o2.book(18, 26));
+    check.checkBool(true, o2.book(40, 45));
+    check.checkBool(true, o2.book(19, 26));
+    check.checkBool(true, o2.book(48, 50));
+    check.checkBool(true, o2.book(1, 6));
+    check.checkBool(true, o2.book(46, 50));
+    check.checkBool(true, o2.book(11, 18));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
