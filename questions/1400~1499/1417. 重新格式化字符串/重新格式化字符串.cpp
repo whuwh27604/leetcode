@@ -43,7 +43,6 @@ s 仅由小写英文字母和/或数字组成。
 */
 
 #include <iostream>
-#include <algorithm>
 #include "../check/CheckResult.h"
 
 using namespace std;
@@ -51,37 +50,43 @@ using namespace std;
 class Solution {
 public:
     string reformat(string s) {
-        string alternant, letters, digits;
+        string s1, s2;
 
-        for (unsigned int i = 0; i < s.size(); i++) {
-            if (s[i] >= 'a') {
-                letters += s[i];
+        for (char c : s) {
+            if (isalpha(c)) {
+                s1 += c;
             }
             else {
-                digits += s[i];
+                s2 += c;
             }
         }
 
-        int len1 = letters.size(), len2 = digits.size();
-        if (abs(len1 - len2) > 1) {
+        int size1 = s1.size(), size2 = s2.size();
+        if (size1 == size2 || size1 == size2 + 1) {
+            return format(s1, s2);
+        }
+        else if (size1 + 1 == size2) {
+            return format(s2, s1);
+        }
+        else {
             return "";
         }
+    }
 
-        int minLen = min(len1, len2);
-        for (int i = 0; i < minLen; i++) {
-            alternant += letters[i];
-            alternant += digits[i];
+    string format(string& s1, string& s2) {
+        int i, size1 = s1.size(), size2 = s2.size();
+        string s;
+
+        for (i = 0; i < size2; ++i) {
+            s += s1[i];
+            s += s2[i];
         }
 
-        if (len1 > minLen) {
-            alternant += letters[minLen];
+        if (i != size1) {
+            s += s1[i];
         }
 
-        if (len2 > minLen) {
-            alternant.insert(alternant.begin(), digits[minLen]);
-        }
-
-        return alternant;        
+        return s;
     }
 };
 
@@ -94,7 +99,7 @@ int main()
     check.checkString("", o.reformat("leetcode"));
     check.checkString("", o.reformat("1229857369"));
     check.checkString("c2o0v1i9d", o.reformat("covid2019"));
-    check.checkString("3a1b2", o.reformat("ab123"));
+    check.checkString("1a2b3", o.reformat("ab123"));
     check.checkString("a", o.reformat("a"));
     check.checkString("1", o.reformat("1"));
     check.checkString("", o.reformat("11"));
