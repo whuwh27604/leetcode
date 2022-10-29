@@ -46,7 +46,7 @@ public:
     int countMatches(vector<vector<string>>& items, string ruleKey, string ruleValue) {
         int count = 0;
 
-        for (auto item : items) {
+        for (auto& item : items) {
             if (ruleKey == "type") {
                 if (item[0] == ruleValue) {
                     ++count;
