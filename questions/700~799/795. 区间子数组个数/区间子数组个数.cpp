@@ -32,7 +32,7 @@ public:
            而各段又被1划分为各子段，包含1的子数组个数等于总的子数组个数减去只包含0的子数组个数
            比如00100010，包含1的子数组个数等于8*(8+1)/2-2*(2+1)/2-3*(3+1)/2-1*(1+1)/2 */
         A.push_back(R + 1);
-        int consecutive0 = 0, consecutive01 = 0, numSubarrTotal = 0, numSubarrOnly0 = 0;
+        long long consecutive0 = 0, consecutive01 = 0, numSubarrTotal = 0, numSubarrOnly0 = 0;
 
         for (int num : A) {
             if (num < L) {
@@ -53,7 +53,7 @@ public:
             }
         }
 
-        return numSubarrTotal;
+        return (int)numSubarrTotal;
     }
 };
 
