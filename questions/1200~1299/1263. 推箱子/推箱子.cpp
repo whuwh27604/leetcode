@@ -79,12 +79,10 @@ public:
         int row = grid.size(), column = grid[0].size(), push = 0;
         vector<vector<char>> gridAroundWall(row + 2, vector<char>(column + 2, '#'));
         int target = 0, box = 0, player = 0;
-        int dr[4] = { 0,1,0,-1 }, dc[4] = { 1,0,-1,0 };
         queue<int> bfs;
         unordered_set<int> visited;
 
-        aroundWall(grid, gridAroundWall);
-        findTarget(gridAroundWall, target, box, player);
+        findTarget(grid, gridAroundWall, target, box, player);
 
         int node = (box << 16) | player;
         bfs.push(node);
@@ -102,9 +100,9 @@ public:
                 decode(node, rbox, cbox, rplayer, cplayer);
 
                 for (int j = 0; j < 4; ++j) {
-                    int nrbox = rbox + dr[j], ncbox = cbox + dc[j], rrbox = rbox - dr[j], rcbox = cbox - dc[j];
-                    if (gridAroundWall[nrbox][ncbox] == '#' || gridAroundWall[rrbox][rcbox] == '#'
-                        || !reachable(gridAroundWall, rbox, cbox, (rplayer << 8) | cplayer, (rrbox << 8) | rcbox)) {
+                    int nrbox = rbox + dr[j], ncbox = cbox + dc[j], nrplayer = rbox - dr[j], ncplayer = cbox - dc[j];
+                    if (gridAroundWall[nrbox][ncbox] == '#' || gridAroundWall[nrplayer][ncplayer] == '#'
+                        || !reachable(gridAroundWall, rbox, cbox, ((rplayer << 8) | cplayer), ((nrplayer << 8) | ncplayer))) {
                         continue;
                     }
 
@@ -124,35 +122,28 @@ public:
         return -1;
     }
 
-    void aroundWall(vector<vector<char>>& grid, vector<vector<char>>& gridAroundWall) {
-        for (unsigned int i = 0; i < grid.size(); ++i) {
-            for (unsigned int j = 0; j < grid[0].size(); ++j) {
-                gridAroundWall[i + 1][j + 1] = grid[i][j];
-            }
-        }
-    }
+    void findTarget(vector<vector<char>>& grid, vector<vector<char>>& gridAroundWall, int& target, int& box, int& player) {
+        int row = grid.size(), column = grid[0].size();
 
-    void findTarget(vector<vector<char>>& gridAroundWall, int& target, int& box, int& player) {
-        for (unsigned int i = 0; i < gridAroundWall.size(); ++i) {
-            for (unsigned int j = 0; j < gridAroundWall[0].size(); ++j) {
-                if (gridAroundWall[i][j] == 'S') {
-                    player = ((i << 8) | j);
-                    gridAroundWall[i][j] = '.';
-                }
-                else if (gridAroundWall[i][j] == 'B') {
-                    box = ((i << 8) | j);
-                    gridAroundWall[i][j] = '.';
-                }
-                else if (gridAroundWall[i][j] == 'T') {
-                    target = ((i << 8) | j);
-                    gridAroundWall[i][j] = '.';
+        for (int i = 0; i < row; ++i) {
+            for (int j = 0; j < column; ++j) {
+                if (grid[i][j] != '#') {
+                    gridAroundWall[i + 1][j + 1] = '.';
+                    if (grid[i][j] == 'S') {
+                        player = (((i + 1) << 8) | (j + 1));
+                    }
+                    else if (grid[i][j] == 'B') {
+                        box = (((i + 1) << 8) | (j + 1));
+                    }
+                    else if (grid[i][j] == 'T') {
+                        target = (((i + 1) << 8) | (j + 1));
+                    }
                 }
             }
         }
     }
 
     bool reachable(vector<vector<char>>& gridAroundWall, int rbox, int cbox, int player1, int player2) {
-        int dr[4] = { 0,1,0,-1 }, dc[4] = { 1,0,-1,0 };
         unordered_set<int> visited;
         queue<int> bfs;
 
@@ -164,14 +155,13 @@ public:
             int node = bfs.front(), r = node >> 8, c = node & 0xff;
             bfs.pop();
 
+            if (node == player2) {
+                gridAroundWall[rbox][cbox] = '.';
+                return true;
+            }
+
             for (int i = 0; i < 4; ++i) {
                 int nr = r + dr[i], nc = c + dc[i], next = ((nr << 8) | nc);
-
-                if (next == player2) {
-                    gridAroundWall[rbox][cbox] = '.';
-                    return true;
-                }
-
                 if (gridAroundWall[nr][nc] == '.' && visited.count(next) == 0) {
                     visited.insert(next);
                     bfs.push(next);
@@ -196,6 +186,10 @@ public:
         node >>= 8;
         rbox = node & 0xff;
     }
+
+private:
+    int dr[4] = { 0,1,0,-1 };
+    int dc[4] = { 1,0,-1,0 };
 };
 
 int main()
@@ -255,8 +249,11 @@ int main()
     grid = { {'#','.','.','#','#','#','#','#'},{'#','.','.','T','#','.','.','#'},{'#','.','.','.','#','B','.','#'},{'#','.','.','.','.','.','.','#'},{'#','.','.','.','#','.','S','#'},{'#','.','.','#','#','#','#','#'} };
     check.checkInt(7, o.minPushBox(grid));
 
-    grid = {{'.','.','#','.','.','.','.','#'},{'.','B','.','.','.','.','.','#'},{'.','.','S','.','.','.','.','.'},{'.','#','.','.','.','.','.','.'},{'.','.','.','.','.','.','.','.'},{'.','.','.','T','.','.','.','.'},{'.','.','.','.','.','.','.','#'},{'.','#','.','.','.','.','.','.'}};
+    grid = { {'.','.','#','.','.','.','.','#'},{'.','B','.','.','.','.','.','#'},{'.','.','S','.','.','.','.','.'},{'.','#','.','.','.','.','.','.'},{'.','.','.','.','.','.','.','.'},{'.','.','.','T','.','.','.','.'},{'.','.','.','.','.','.','.','#'},{'.','#','.','.','.','.','.','.'} };
     check.checkInt(6, o.minPushBox(grid));
+
+    grid = { {'S'},{'B'},{'T'},{'.'},{'#'} };
+    check.checkInt(1, o.minPushBox(grid));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
