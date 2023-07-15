@@ -36,25 +36,25 @@ public:
         vector<vector<int>> ans;
 
         for (i = 0; i < len - 3; next(nums, i)) {
-            if ((nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3]) > target) {
+            if (((long long)nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3]) > target) {
                 break;
             }
-            if ((nums[i] + nums[len - 3] + nums[len - 2] + nums[len - 1]) < target) {
+            if (((long long)nums[i] + nums[len - 3] + nums[len - 2] + nums[len - 1]) < target) {
                 continue;
             }
 
             for (j = i + 1; j < len - 2; next(nums, j)) {
-                if ((nums[i] + nums[j] + nums[j + 1] + nums[j + 2]) > target) {
+                if (((long long)nums[i] + nums[j] + nums[j + 1] + nums[j + 2]) > target) {
                     break;
                 }
-                if ((nums[i] + nums[j] + nums[len - 2] + nums[len - 1]) < target) {
+                if (((long long)nums[i] + nums[j] + nums[len - 2] + nums[len - 1]) < target) {
                     continue;
                 }
 
                 left = j + 1;
                 right = len - 1;
                 while (left < right) {
-                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                    long long sum = (long long)nums[i] + nums[j] + nums[left] + nums[right];
                     if (sum == target) {
                         ans.push_back({ nums[i],nums[j],nums[left],nums[right] });
                         ret = next(nums, left);
@@ -137,6 +137,11 @@ int main()
     check.checkIntDoubleVector(expected, actual);
 
     nums = { 1,0,-1 };
+    actual = o.fourSum(nums, 0);
+    expected = {  };
+    check.checkIntDoubleVector(expected, actual);
+
+    nums = { 1000000000,1000000000,1000000000,1000000000 };
     actual = o.fourSum(nums, 0);
     expected = {  };
     check.checkIntDoubleVector(expected, actual);
