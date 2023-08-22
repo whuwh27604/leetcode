@@ -5,7 +5,7 @@
 字符 '_' 表示可以被 任意 'L' 或 'R' 片段占据的空位。
 如果在移动字符串 start 中的片段任意次之后可以得到字符串 target ，返回 true ；否则，返回 false 。
 
- 
+
 
 示例 1：
 
@@ -14,7 +14,7 @@
 解释：可以从字符串 start 获得 target ，需要进行下面的移动：
 - 将第一个片段向左移动一步，字符串现在变为 "L___R__R_" 。
 - 将最后一个片段向右移动一步，字符串现在变为 "L___R___R" 。
-- 将第二个片段向右移动散步，字符串现在变为 "L______RR" 。
+- 将第二个片段向右移动三步，字符串现在变为 "L______RR" 。
 可以从字符串 start 得到 target ，所以返回 true 。
 示例 2：
 
@@ -27,17 +27,13 @@
 输入：start = "_R", target = "R_"
 输出：false
 解释：字符串 start 中的片段只能向右移动，所以无法从字符串 start 得到 target 。
- 
+
 
 提示：
 
 n == start.length == target.length
 1 <= n <= 105
 start 和 target 由字符 'L'、'R' 和 '_' 组成
-
-来源：力扣（LeetCode）
-链接：https://leetcode.cn/problems/move-pieces-to-obtain-a-string
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 
 #include <iostream>
@@ -48,20 +44,29 @@ using namespace std;
 class Solution {
 public:
     bool canChange(string start, string target) {
-        int size = start.size(), left = 0, right = 0, blank = 0;
+        int size = start.size(), i = 0;
 
-        for (int i = 0; i < size; ++i) {
-            start[i] == 'L' ? ++left : start[i] == 'R' ? ++right : ++blank;
-            target[i] == 'L' ? --left : target[i] == 'R' ? --right : --blank;
+        for (int j = 0; j < size; ++j) {
+            if (target[j] != '_') {
+                while (i < size && start[i] == '_') {
+                    ++i;
+                }
 
-            if ((target[i] == 'L' && right > 0)  // L无法越过R
-                || (target[i] == 'R' && (left > 0 || blank > 0))  // R无法越过L和_
-                || (target[i] == '_' && left > 0)) {  // _无法越过L
+                if (i == size || !((start[i] == 'L' && target[j] == 'L' && i >= j) || (start[i] == 'R' && target[j] == 'R' && i <= j))) {
+                    return false;
+                }
+
+                ++i;
+            }
+        }
+
+        while (i < size) {
+            if (start[i++] != '_') {
                 return false;
             }
         }
 
-        return left == 0 && right == 0 && blank == 0;
+        return true;
     }
 };
 
@@ -74,6 +79,8 @@ int main()
     check.checkBool(false, o.canChange("R_L_", "__LR"));
     check.checkBool(false, o.canChange("_R", "R_"));
     check.checkBool(false, o.canChange("_R", "L_"));
+    check.checkBool(false, o.canChange("_RL_", "L__R"));
+    check.checkBool(false, o.canChange("_L__R__R_L", "L______RR_"));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
