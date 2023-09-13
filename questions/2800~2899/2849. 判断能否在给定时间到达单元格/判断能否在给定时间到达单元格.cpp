@@ -52,6 +52,11 @@ int main()
 {
     CheckResult check;
     Solution o;
+
+    check.checkBool(true, o.isReachableAtTime(2, 4, 7, 7, 6));
+    check.checkBool(true, o.isReachableAtTime(1, 1, 1, 1, 3));
+    check.checkBool(false, o.isReachableAtTime(3, 1, 7, 3, 3));
+    check.checkBool(false, o.isReachableAtTime(1, 2, 1, 2, 1));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
