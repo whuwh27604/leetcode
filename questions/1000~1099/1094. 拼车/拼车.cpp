@@ -59,6 +59,10 @@ public:
             passengersEachLocation[trip[2]] -= trip[0];
         }
 
+        if (passengersEachLocation[0] > capacity) {
+            return false;
+        }
+
         for (int i = 1; i < 1001; ++i) {
             passengersEachLocation[i] += passengersEachLocation[i - 1];
             if (passengersEachLocation[i] > capacity) {
@@ -92,6 +96,9 @@ int main()
 
     trips = { {9,3,4},{9,1,7},{4,2,4},{7,4,5} };
     check.checkBool(false, o.carPooling(trips, 21));
+
+    trips = { {9,0,1},{3,3,7} };
+    check.checkBool(false, o.carPooling(trips, 4));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
