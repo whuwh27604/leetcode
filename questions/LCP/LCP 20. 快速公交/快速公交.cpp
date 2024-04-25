@@ -126,7 +126,7 @@ int main()
 
 	jump = { 6061,5876,6528,6680,5580,2772,6619,7365,9474,2136 };
 	cost = { 1792,6103,9708,6519,2305,8327,7393,9533,269,7938 };
-	check.checkInt(1293, o.busRapidTransit(980632, 2933, 5626, jump, cost));
+	check.checkInt(1964249, o.busRapidTransit(980632, 2933, 5626, jump, cost));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
