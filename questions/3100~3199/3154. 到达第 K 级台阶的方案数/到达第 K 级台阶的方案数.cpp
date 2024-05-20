@@ -96,7 +96,8 @@ int main()
 
 	check.checkInt(2, o.waysToReachStair(0));
 	check.checkInt(4, o.waysToReachStair(1));
-	//check.checkInt(2, o.waysToReachStair(100000));
+	check.checkInt(0, o.waysToReachStair(100000000));
+	check.checkInt(0, o.waysToReachStair(1000000000));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
