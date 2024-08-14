@@ -62,6 +62,7 @@ public:
             vector<int> tmp(maxNum + 1, 0);
 
             for (int n = 0; n <= num; ++n) {
+                // 枚举所有prev，dp[n] = sum(dp[prev])，prev的取值范围是[0, min(diff + n, n)]
                 while (prev <= min(diff + n, n)) {
                     dpSum = (dpSum + dp[prev++]) % mod;
                 }
