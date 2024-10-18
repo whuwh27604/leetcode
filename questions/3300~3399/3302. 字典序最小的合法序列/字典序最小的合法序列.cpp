@@ -98,7 +98,7 @@ public:
                 continue;
             }
 
-            if (!changed && (j == n - 1 || lastMatch[j + 1] > i)) {  // 当前字符不匹配，但是修改后可以匹配，并且后续不需要修改就可以匹配，那么应该修改它
+            if (!changed && (j == n - 1 || lastMatch[j + 1] > i)) {  // 当前字符不匹配，还有修改机会，并且后续不需要修改就可以匹配，那么应该修改它
                 changed = true;
                 seqs[j] = i++;
                 continue;
