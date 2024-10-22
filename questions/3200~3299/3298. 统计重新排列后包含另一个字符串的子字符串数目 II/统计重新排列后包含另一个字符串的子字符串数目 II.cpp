@@ -57,40 +57,42 @@ class Solution {
 public:
     long long validSubstringCount(string word1, string word2) {
         vector<int> count1(26, 0), count2(26, 0);
-        int size = (int)word1.size(), right = 0;
+        int size = (int)word1.size(), right = 0, idx = 0, target = 0, mask = 0;
         long long subs = 0;
 
-        countWord2(word2, count2);
+        countWord2(word2, count2, target);
 
         for (int left = 0; left < size; ++left) {
-            while (right < size && !isValid(count1, count2)) {
-                ++count1[word1[right++] - 'a'];
+            while (right < size && mask != target) {
+                idx = word1[right++] - 'a';
+                if (++count1[idx] >= count2[idx] && count2[idx] != 0) {
+                    mask |= (1 << idx);
+                }
             }
 
-            if (isValid(count1, count2)) {
+            if (mask == target) {
                 subs += ((long long)size - right + 1);
             }
 
-            --count1[word1[left] - 'a'];
+            idx = word1[left] - 'a';
+            if (--count1[idx] < count2[idx]) {
+                mask &= ~(1 << idx);
+            }
         }
 
         return subs;
     }
 
-    void countWord2(string& word2, vector<int>& count2) {
+    void countWord2(string& word2, vector<int>& count2, int& target) {
         for (char c : word2) {
             ++count2[c - 'a'];
         }
-    }
 
-    bool isValid(vector<int>& count1, vector<int>& count2) {
-        for (int i = 0; i < 26; ++i) {
-            if (count1[i] < count2[i]) {
-                return false;
+        for (int i = 0, bit = 1; i < 26; ++i, bit <<= 1) {
+            if (count2[i] != 0) {
+                target |= bit;
             }
         }
-
-        return true;
     }
 };
 
@@ -103,6 +105,7 @@ int main()
     check.checkLongLong(10, o.validSubstringCount("abcabc", "abc"));
     check.checkLongLong(0, o.validSubstringCount("abcabc", "aaabc"));
     check.checkLongLong(15, o.validSubstringCount("zzzzz", "z"));
+    check.checkLongLong(62, o.validSubstringCount("dddddededddeeeddd", "eee"));
     check.checkLongLong(1, o.validSubstringCount("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz"));
 }
 
