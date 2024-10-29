@@ -143,6 +143,8 @@ int main()
     check.checkInt(8, o.possibleStringCount("aaabbb", 3));
     check.checkInt(36, o.possibleStringCount("aabbcccddd", 4));
     check.checkInt(0, o.possibleStringCount("aaa", 4));
+    check.checkInt(337578926, o.possibleStringCount("aabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccddd", 5));
+    check.checkInt(481596766, o.possibleStringCount("aabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccdddaabbccddaaaaaabbbaabbcccddd", 7));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
