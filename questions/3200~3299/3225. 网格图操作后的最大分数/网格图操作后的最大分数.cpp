@@ -110,9 +110,9 @@ public:
         preMax.clear();
         preMax.resize(n + 1, 0);
 
-        for (int cc = 0; cc <= n; ++cc) {
-            for (int pc = 0; pc <= cc; ++pc) {
-                preMax[cc] = max(preMax[cc], maxScore[cc][pc]);
+        for (int cr = 0; cr <= n; ++cr) {
+            for (int pr = 0; pr <= cr; ++pr) {
+                preMax[cr] = max(preMax[cr], maxScore[cr][pr]);
             }
         }
     }
@@ -121,9 +121,9 @@ public:
         sufMax.clear();
         sufMax.resize(n + 1, 0);
 
-        for (int cc = 0; cc <= n; ++cc) {
-            for (int pc = n; pc >= cc; --pc) {
-                sufMax[cc] = max(sufMax[cc], maxScore[cc][pc]);
+        for (int cr = 0; cr <= n; ++cr) {
+            for (int pr = n; pr >= cr; --pr) {
+                sufMax[cr] = max(sufMax[cr], maxScore[cr][pr]);
             }
         }
     }
