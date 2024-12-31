@@ -60,14 +60,7 @@ public:
         string ans(word, 0, maxLen);
 
         for (int i = 1; i < size; ++i) {
-            string tmp(word, i, min(maxLen, size - i));
-
-            if (word[i] > ans[0]) {
-                ans = tmp;
-            }
-            else if (word[i] == ans[0]) {
-                ans = max(ans, tmp);
-            }
+            ans = max(ans, string(word, i, min(maxLen, size - i)));
         }
 
         return ans;
