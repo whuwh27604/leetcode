@@ -1,7 +1,7 @@
 ﻿/* 猫和老鼠.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 两位玩家分别扮演猫和老鼠，在一张 无向 图上进行游戏，两人轮流行动。
 
-图的形式是：graph[a] 是一个列表，由满足 ab 是图中的一条边的所有节点 b 组成。
+图的形式是：graph[a] 是一个列表，由满足 ab 是图中的一条边的所有节点 b 组成。
 
 老鼠从节点 1 开始，第一个出发；猫从节点 2 开始，第二个出发。在节点 0 处有一个洞。
 
@@ -16,10 +16,10 @@
 如果某一位置重复出现（即，玩家的位置和移动顺序都与上一次行动相同），游戏平局。
 给你一张图 graph ，并假设两位玩家都都以最佳状态参与游戏：
 
-如果老鼠获胜，则返回 1；
+如果老鼠获胜，则返回 1；
 如果猫获胜，则返回 2；
 如果平局，则返回 0 。
- 
+
 示例 1：
 
 
@@ -30,85 +30,97 @@
 
 输入：graph = [[1,3],[0],[3],[0,2]]
 输出：1
- 
+
 
 提示：
 
 3 <= graph.length <= 50
-1 <= graph[i].length < graph.length
+1 <= graph[i].length < graph.length
 0 <= graph[i][j] < graph.length
 graph[i][j] != i
 graph[i] 互不相同
-猫和老鼠在游戏中总是移动
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/cat-and-mouse
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+猫和老鼠在游戏中总是可以移动
 */
 
 #include <iostream>
-#include <unordered_set>
+#include <queue>
 #include "../check/CheckResult.h"
 
 using namespace std;
 
+class State {
+public:
+    int turn;  // 谁的轮次
+    int mouse;  // 老鼠的位置
+    int cat;  // 猫的位置，[turn, mouse, cat]定义一个唯一的状态
+
+    State() : turn(0), mouse(0), cat(0) {}
+    State(int t, int m, int c) : turn(t), mouse(m), cat(c) {}
+};
+
 class Solution {
 public:
     int catMouseGame(vector<vector<int>>& graph) {
-        int n = graph.size(), maxTurns = 2 * n;
-        vector<vector<int>> results(maxTurns, vector<int>(4000, -1));  // (50 << 6) | 50最多需要3250个状态
-
-        return getResults(graph, 2, 1, results, 0, maxTurns);
-    }
-
-    int getResults(vector<vector<int>>& graph, int cat, int mouse, vector<vector<int>>& results, int turns, int maxTurns) {
-        const int INIT = -1, DRAW = 0, WIN = 1, LOST = 2;
+        const int DRAW = 0, WIN = 1, LOST = 2;
         const int MOUSE = 0, CAT = 1;
-        int state = ((cat << 6) | mouse), who = (turns & 1);
+        int n = (int)graph.size();
+        queue<State> states;
+        vector<vector<vector<int>>> results(2, vector<vector<int>>(n, vector<int>(n, DRAW)));
+        vector<vector<vector<int>>> degrees(2, vector<vector<int>>(n, vector<int>(n, 0)));
 
-        if (turns == maxTurns) {  // 超过最大轮数，判定为平局
-            return DRAW;
+        for (int m = 0; m < n; ++m) {
+            for (int c = 0; c < n; ++c) {
+                degrees[MOUSE][m][c] = (int)graph[m].size();
+                degrees[CAT][m][c] = (int)graph[c].size();
+            }
         }
 
-        if (results[turns][state] != INIT) {
-            return results[turns][state];
+        for (int next : graph[0]) {
+            for (int m = 0; m < n; ++m) {
+                --degrees[CAT][m][next];  // cat不能到0
+            }
         }
 
-        int& result = results[turns][state];
-        result = LOST;
+        for (int i = 1; i < n; ++i) {
+            results[MOUSE][0][i] = WIN;  // mouse在位置0，win
+            results[CAT][0][i] = WIN;
+            states.push(State(MOUSE, 0, i));
+            states.push(State(CAT, 0, i));
 
-        for (int next : graph[who == MOUSE ? mouse : cat]) {
-            if (next == 0) {
-                if (who == MOUSE) {  // mouse可以回到洞里，win！
-                    result = WIN;
-                    break;
+            results[MOUSE][i][i] = LOST;  // mouse、cat在同一位置，lost
+            results[CAT][i][i] = LOST;
+            states.push(State(MOUSE, i, i));
+            states.push(State(CAT, i, i));
+        }
+
+        while (!states.empty()) {
+            State state = states.front();
+            states.pop();
+
+            int turn = state.turn, mouse = state.mouse, cat = state.cat, result = results[turn][mouse][cat];
+            int preTurn = turn ^ 1;
+
+            for (int prePos : graph[preTurn == MOUSE ? mouse : cat]) {
+                int preMouse = (turn == MOUSE ? mouse : prePos);
+                int preCat = (turn == CAT ? cat : prePos);
+
+                if (preCat != 0 && results[preTurn][preMouse][preCat] == DRAW) {  // 当前胜负状态未定
+                    // 前一轮是mouse，当前是mouse win；或者前一轮是cat，当前是mouse lost。那么前一轮就应该选择该方案。
+                    if ((result == WIN && preTurn == MOUSE) || (result == LOST && preTurn == CAT)) {
+                        results[preTurn][preMouse][preCat] = result;
+                        states.push(State(preTurn, preMouse, preCat));
+                    }
+                    else {  // 还不能确定上一个状态的结果，但可以将可尝试的度数减1
+                        if (--degrees[preTurn][preMouse][preCat] == 0) {  // 可尝试的度数减到0了，那么结果就确定了
+                            results[preTurn][preMouse][preCat] = (preTurn == MOUSE ? LOST : WIN);  // 对pre来说，尝试所有方案都没有取胜，那么肯定会输。平局的话degree不会减到0
+                            states.push(State(preTurn, preMouse, preCat));
+                        }
+                    }
                 }
-                else {  // cat不可以走到洞中
-                    continue;
-                }
-            }
-
-            if (who == MOUSE && next == cat) {  // mouse被cat抓了，不能选这条路
-                continue;
-            }
-
-            if (who == CAT && next == mouse) { // cat抓到mouse，win！
-                result = WIN;
-                break;
-            }
-
-            int nextResult = getResults(graph, who == MOUSE ? cat : next, who == MOUSE ? next : mouse, results, turns + 1, maxTurns);  // 走一步，看对方什么结果
-
-            if (nextResult == LOST) {  // 如果对方必输，那么选择这个走法必胜
-                result = WIN;
-                break;
-            }
-            else if (nextResult == DRAW) {  // 如果对方平局，那么至少不用输了
-                result = DRAW;
             }
         }
 
-        return result;
+        return results[MOUSE][1][2];
     }
 };
 
@@ -151,6 +163,9 @@ int main()
     check.checkInt(2, o.catMouseGame(graph));
 
     graph = { {6},{4},{9},{5},{1,5},{3,4,6},{0,5,10},{8,9,10},{7},{2,7},{6,7} };
+    check.checkInt(1, o.catMouseGame(graph));
+
+    graph = { {5,7,9},{3,4,5,6},{3,4,5,8},{1,2,6,7},{1,2,5,7,9},{0,1,2,4,8},{1,3,7,8},{0,3,4,6,8},{2,5,6,7,9},{0,4,8} };
     check.checkInt(1, o.catMouseGame(graph));
 }
 
