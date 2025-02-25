@@ -13,13 +13,13 @@
 
 Allocator(int n) 使用一个大小为 n 的内存数组初始化 Allocator 对象。
 int allocate(int size, int mID) 找出大小为 size 个连续空闲内存单元且位于  最左侧 的块，分配并赋 id mID 。返回块的第一个下标。如果不存在这样的块，返回 -1 。
-int free(int mID) 释放 id mID 对应的所有内存单元。返回释放的内存单元数目。
+int freeMemory(int mID) 释放 id mID 对应的所有内存单元。返回释放的内存单元数目。
 
 
 示例：
 
 输入
-["Allocator", "allocate", "allocate", "allocate", "free", "allocate", "allocate", "allocate", "free", "allocate", "free"]
+["Allocator", "allocate", "allocate", "allocate", "freeMemory", "allocate", "allocate", "allocate", "freeMemory", "allocate", "freeMemory"]
 [[10], [1, 1], [1, 2], [1, 3], [2], [3, 4], [1, 1], [1, 1], [1], [10, 2], [7]]
 输出
 [null, 0, 1, 2, 1, 3, 1, 6, 3, -1, 0]
@@ -29,13 +29,13 @@ Allocator loc = new Allocator(10); // 初始化一个大小为 10 的内存数�
 loc.allocate(1, 1); // 最左侧的块的第一个下标是 0 。内存数组变为 [1, , , , , , , , , ]。返回 0 。
 loc.allocate(1, 2); // 最左侧的块的第一个下标是 1 。内存数组变为 [1,2, , , , , , , , ]。返回 1 。
 loc.allocate(1, 3); // 最左侧的块的第一个下标是 2 。内存数组变为 [1,2,3, , , , , , , ]。返回 2 。
-loc.free(2); // 释放 mID 为 2 的所有内存单元。内存数组变为 [1, ,3, , , , , , , ] 。返回 1 ，因为只有 1 个 mID 为 2 的内存单元。
+loc.freeMemory(2); // 释放 mID 为 2 的所有内存单元。内存数组变为 [1, ,3, , , , , , , ] 。返回 1 ，因为只有 1 个 mID 为 2 的内存单元。
 loc.allocate(3, 4); // 最左侧的块的第一个下标是 3 。内存数组变为 [1, ,3,4,4,4, , , , ]。返回 3 。
 loc.allocate(1, 1); // 最左侧的块的第一个下标是 1 。内存数组变为 [1,1,3,4,4,4, , , , ]。返回 1 。
 loc.allocate(1, 1); // 最左侧的块的第一个下标是 6 。内存数组变为 [1,1,3,4,4,4,1, , , ]。返回 6 。
-loc.free(1); // 释放 mID 为 1 的所有内存单元。内存数组变为 [ , ,3,4,4,4, , , , ] 。返回 3 ，因为有 3 个 mID 为 1 的内存单元。
+loc.freeMemory(1); // 释放 mID 为 1 的所有内存单元。内存数组变为 [ , ,3,4,4,4, , , , ] 。返回 3 ，因为有 3 个 mID 为 1 的内存单元。
 loc.allocate(10, 2); // 无法找出长度为 10 个连续空闲内存单元的空闲块，所有返回 -1 。
-loc.free(7); // 释放 mID 为 7 的所有内存单元。内存数组保持原状，因为不存在 mID 为 7 的内存单元。返回 0 。
+loc.freeMemory(7); // 释放 mID 为 7 的所有内存单元。内存数组保持原状，因为不存在 mID 为 7 的内存单元。返回 0 。
 
 
 提示：
@@ -80,7 +80,7 @@ public:
         return -1;
     }
 
-    int free(int mID) {
+    int freeMemory(int mID) {
         int i = 0, units = 0;
 
         while (i < maxSize) {
@@ -113,19 +113,19 @@ int main()
     check.checkInt(0, o1.allocate(1, 1));
     check.checkInt(1, o1.allocate(1, 2));
     check.checkInt(2, o1.allocate(1, 3));
-    check.checkInt(1, o1.free(2));
+    check.checkInt(1, o1.freeMemory(2));
     check.checkInt(3, o1.allocate(3, 4));
     check.checkInt(1, o1.allocate(1, 1));
     check.checkInt(6, o1.allocate(1, 1));
-    check.checkInt(3, o1.free(1));
+    check.checkInt(3, o1.freeMemory(1));
     check.checkInt(-1, o1.allocate(10, 2));
-    check.checkInt(0, o1.free(7));
+    check.checkInt(0, o1.freeMemory(7));
 
     Allocator o2(7);
     check.checkInt(0, o2.allocate(3, 1));
     check.checkInt(-1, o2.allocate(5, 2));
-    check.checkInt(3, o2.free(1));
-    check.checkInt(0, o2.free(3));
+    check.checkInt(3, o2.freeMemory(1));
+    check.checkInt(0, o2.freeMemory(3));
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
